@@ -67,19 +67,14 @@ RUN useradd -m -s /bin/bash comfy && \
     chmod 700 /home/comfy/.ssh && \
     mkdir -p /home/comfy/startup
 
-# Copy SSH key and set permissions
-COPY id_ed25519.pub /home/comfy/.ssh/authorized_keys
-RUN chmod 600 /home/comfy/.ssh/authorized_keys && \
-    chown comfy:comfy /home/comfy/.ssh/authorized_keys
-
 # Install Tailscale
 RUN curl -fsSL https://tailscale.com/install.sh | sh
 
 # Copy and setup entrypoint scripts
-COPY entrypoint.sh /entrypoint.sh
-COPY setup.sh /home/comfy/startup/setup.sh
-COPY start.sh /home/comfy/startup/start.sh
-COPY utils.sh /home/comfy/startup/utils.sh
+COPY ./container/entrypoint.sh /entrypoint.sh
+COPY ./container/setup.sh /home/comfy/startup/setup.sh
+COPY ./container/start.sh /home/comfy/startup/start.sh
+COPY ./container/utils.sh /home/comfy/startup/utils.sh
 RUN chmod +x \
     /entrypoint.sh \
     /home/comfy/startup/setup.sh \

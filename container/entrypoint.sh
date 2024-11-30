@@ -9,6 +9,15 @@ COMFY_ENV_VARS=$(env | grep "COMFY_DOCKER_" | awk '{print $1}' | paste -sd " " -
 
 echo "Consolidated COMFY_ENV_VARS: ${COMFY_ENV_VARS}"
 
+if [ ! -z "$COMFY_DOCKER_SSH_PUBKEY" ]; then
+    echo "$COMFY_DOCKER_SSH_PUBKEY" > /home/comfy/.ssh/authorized_keys
+
+    chmod 600 /home/comfy/.ssh/authorized_keys
+    chown comfy:comfy /home/comfy/.ssh/authorized_keys
+else
+    log_message "Missing public SSH key in environment variable: \"COMFY_DOCKER_SSH_PUBKEY\"."
+fi
+
 log_message "Connecting to tailscale..."
 tailscaled --tun=userspace-networking &
 tailscale up --hostname=comfy --authkey=${COMFY_DOCKER_TAILSCALE_AUTH}
