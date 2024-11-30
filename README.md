@@ -39,7 +39,7 @@
     Host comfy
         HostName comfy
         User comfy
-        IdentityFile ~/.ssh/comfy
+        IdentityFile ~/.ssh/comfyui-dev
     ```
 10. Open the public key: `~/.ssh/comfyui-dev.pub` and copy it's components somewhere, as we will need it later.
 

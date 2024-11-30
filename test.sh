@@ -27,14 +27,14 @@ if [ ! -f "~/.ssh/comfyui-dev" ]; then
 fi
 
 # Read public key into variable
-PUBKEY=$(cat ./comfy.pub)
+PUBKEY=$(cat ./comfyui-dev.pub)
 
 docker run \
-  --name comfy \
+  --name comfyui-dev \
   --gpus all \
   -e COMFY_DEV_SSH_PUBKEY="$PUBKEY" \
   -e COMFY_DEV_TAILSCALE_AUTH="$TAILSCALE_AUTH" \
   -e COMFY_DEV_PYTHON_VERSION="3.12.4" \
   -e COMFY_DEV_WIN32="false" \
   -e COMFY_DEV_START_COMFY="false" \
-  comfy:latest
+  nomcycle/comfyui-dev:latest

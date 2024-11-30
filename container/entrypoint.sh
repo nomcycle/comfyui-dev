@@ -15,7 +15,7 @@ fi
 
 log_message "Connecting to tailscale..."
 tailscaled --tun=userspace-networking &
-tailscale up --hostname=comfy --authkey=${COMFY_DEV_TAILSCALE_AUTH}
+tailscale up --hostname=comfyui-dev --authkey=${COMFY_DEV_TAILSCALE_AUTH}
 
 TAILSCALE_IP=$(tailscale ip -4)
 log_message "Connected with address: ${TAILSCALE_IP}"
