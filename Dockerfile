@@ -1,8 +1,8 @@
 # FROM tensorflow/tensorflow:latest-gpu
 FROM nvidia/cuda:12.4.1-runtime-ubuntu22.04
 
-LABEL version="1.0" \
-      description="This is a Docker image for a TensorFlow GPU environment with additional tools installed." \
+LABEL version="0.1" \
+      description="ComfyUI development using VSCode remote development over tailscale." \
       tag="latest"
 
 # Set environment variables

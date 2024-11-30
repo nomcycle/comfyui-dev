@@ -13,7 +13,7 @@ python -m pip install torch torchvision torchaudio --extra-index-url https://dow
 python -m pip install -r requirements.txt
 python -m pip install onnxruntime
 
-if [ "${COMFY_DOCKER_START_COMFY}" = "true" ]; then
+if [ "${COMFY_DEV_START_COMFY}" = "true" ]; then
     log_message "Starting comfy..."
     python main.py --listen "0.0.0.0"
 else

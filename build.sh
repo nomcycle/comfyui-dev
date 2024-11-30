@@ -1,3 +1,3 @@
 #/bin/bash
 
-docker build . -t comfy
+docker build . -t nomcycle/comfyui-dev

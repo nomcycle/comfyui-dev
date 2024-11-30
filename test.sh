@@ -22,19 +22,19 @@ if [ -z "$TAILSCALE_AUTH" ]; then
 fi
 
 # Generate SSH key pair if it doesn't exist
-if [ ! -f "./id_ed25519" ]; then
-    ssh-keygen -t ed25519 -f ./id_ed25519 -N "" -C "comfy"
+if [ ! -f "~/.ssh/comfyui-dev" ]; then
+    ssh-keygen -t ed25519 -f ~/.ssh/comfyui-dev -N "" -C "comfyui"
 fi
 
 # Read public key into variable
-PUBKEY=$(cat ./id_ed25519.pub)
+PUBKEY=$(cat ./comfy.pub)
 
 docker run \
   --name comfy \
   --gpus all \
-  -e COMFY_DOCKER_SSH_PUBKEY="$PUBKEY" \
-  -e COMFY_DOCKER_TAILSCALE_AUTH="$TAILSCALE_AUTH" \
-  -e COMFY_DOCKER_PYTHON_VERSION="3.12.4" \
-  -e COMFY_DOCKER_WIN32="false" \
-  -e COMFY_DOCKER_START_COMFY="false" \
+  -e COMFY_DEV_SSH_PUBKEY="$PUBKEY" \
+  -e COMFY_DEV_TAILSCALE_AUTH="$TAILSCALE_AUTH" \
+  -e COMFY_DEV_PYTHON_VERSION="3.12.4" \
+  -e COMFY_DEV_WIN32="false" \
+  -e COMFY_DEV_START_COMFY="false" \
   comfy:latest

@@ -1,4 +1,4 @@
 #/bin/bash
 
-docker tag comfy comfy:latest nomcycle/comfyui:latest
-docker push nomcycle/comfyui:latest
+docker tag comfyui-dev comfyui-dev:latest nomcycle/comfyui-dev:latest
+docker push nomcycle/comfyui-dev:latest
