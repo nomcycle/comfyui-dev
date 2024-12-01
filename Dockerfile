@@ -22,6 +22,7 @@ RUN apt-get update -y && \
     apt-get install -y --no-install-recommends \
         wget \
         git \
+        sudo \
         openssh-server \
         curl \
         iptables \
@@ -54,9 +55,7 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 # Create user and setup SSH
 RUN useradd -m -s /bin/bash comfy && \
-    echo "comfy ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers \
-    # Consider using ARG for password or managing it through secrets
-    # Configure SSH
+    echo "comfy ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers && \
     sed -i 's/#PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config && \
     sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin no/' /etc/ssh/sshd_config && \
     # Setup SSH directory
