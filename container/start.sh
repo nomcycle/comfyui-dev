@@ -9,6 +9,7 @@ log_message "Activating comfy environment..."
 conda activate comfy
 
 log_message "Validating pip packages for comfy..."
+python -m pip install --upgrade pip
 python -m pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu124
 python -m pip install -r requirements.txt
 python -m pip install onnxruntime

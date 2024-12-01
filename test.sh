@@ -23,11 +23,11 @@ fi
 
 # Generate SSH key pair if it doesn't exist
 if [ ! -f "~/.ssh/comfyui-dev" ]; then
-    ssh-keygen -t ed25519 -f ~/.ssh/comfyui-dev -N "" -C "comfyui"
+    ssh-keygen -t ed25519 -f ~/.ssh/comfyui-dev -N "" -C "comfyui-dev"
 fi
 
 # Read public key into variable
-PUBKEY=$(cat ./comfyui-dev.pub)
+PUBKEY=$(cat ~/.ssh/comfyui-dev.pub)
 
 docker run \
   --name comfyui-dev \

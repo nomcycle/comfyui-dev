@@ -53,8 +53,4 @@ else
     log_message "ComfyUI directory already exists."
 fi
 
-log_message "Upgrading pip..."
-python -m pip install --upgrade pip
-log_message "Pip upgraded successfully."
-
 log_message "Finished setting up python and repositories."
