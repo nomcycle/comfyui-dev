@@ -1,4 +1,4 @@
-# ComfyUI-Dev
+# Secure ComfyUI Development Docker Container
 
 * [Github](https://github.com/nomcycle/comfyui-dev)
 * [Docker](https://hub.docker.com/repository/docker/nomcycle/comfyui-dev)
