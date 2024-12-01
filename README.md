@@ -29,7 +29,7 @@ This container provides a secure, remote, and persistent development environment
    *Setting `serverInstallPath` ensures remote extensions and VSCode configuration persist between container terminations*
     ```json
     "remote.SSH.remotePlatform": {
-        "comfy": "linux"
+        "comfyui-dev": "linux"
     },
     "remote.SSH.serverInstallPath": {
         "comfy": "/workspace/"
@@ -82,8 +82,8 @@ This container provides a secure, remote, and persistent development environment
 *Once the container is deployed and idling, you can remotely connect to it through visual code remote debugging*
 1. Open VSCode.
 2. Open the **Command Palette"** (Ctrl + P + `).
-3. Type in: `Add New SSH Host` after the `>`
-4. It will prompt you for the address which will be: `comfy@comfyui-dev`
+3. Type in: `Connect to Host...` after the `>`
+4. In the dropdown, you shold see the `comfyui-dev` host, select it.
 5. Then it will prompt you for the platform, select **"Linux"**. 
 6. Select continue when prompted.
 
