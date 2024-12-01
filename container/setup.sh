@@ -41,9 +41,8 @@ cd /workspace
 
 if [ ! -d "/workspace/ComfyUI" ]; then
     log_message "Cloning ComfyUI repository..."
-    git clone https://github.com/nomcycle/ComfyUI
+    git clone https://github.com/comfyanonymous/ComfyUI
     cd ComfyUI
-    git remote add upstream https://github.com/comfyanonymous/ComfyUI
     log_message "ComfyUI repository cloned."
 
     if ! grep -q "cd /workspace/ComfyUI" /home/comfy/.bashrc; then

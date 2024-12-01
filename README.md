@@ -13,6 +13,9 @@ Follow the instructions listed below in order:
     - [VSCode Setup](#vscode-setup)
     - [RunPod Setup](#runpod-setup)
     - [Logging In](#logging-in)
+  - [Troubleshooting \& Gotchas](#troubleshooting--gotchas)
+    - [Host Timeout](#host-timeout)
+    - [Public Key Denied](#public-key-denied)
 
 ## Setup
 
@@ -100,3 +103,13 @@ Host comfyui-dev
 6. Select continue when prompted.
 7. VSCode remote development server will then be downloaded to `/workspace` folder.
 8. Once it's finished vscode by default opens the home folder: `~/`. There isn't currently a way to change this in VSCode yet. However, now you can perform **"File->Open Folder"** or (Ctrl + O) and type in `/workspace/ComfyUI`, and that folder will show up in your **"Recents Folders"** for quick access.
+
+## Troubleshooting & Gotchas
+
+### Host Timeout
+
+If your destroying and recreating the container quickly, tailscale doesn't have enough time to remove the previous device. Therefore, just login to tailscale and remove the previous devices and insure that the current connected device's machine name is named: `comfyui-dev`.
+
+### Public Key Denied
+
+Make sure you've overriden the pod template's `COMFY_DEV_SSH_PUBKEY` environment variable, see [RunPod Setup](#runpod-setup)
