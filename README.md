@@ -11,6 +11,8 @@ A secure, remote, and persistent development environment for ComfyUI that works 
 2. Configure VSCode with SSH keys ([Instructions](#vscode-setup))
 3. Create a RunPod deployment with the required environment variables ([Instructions](#runpod-setup))
 4. Connect to your development environment ([Instructions](#connecting-to-your-environment))
+5. Start ComfyUI ([Instructions](#running-comfyui-from-vscode))
+6. Debugging ([Instructions](#debugging--breakpoints))
 
 ## Environment Variables
 
@@ -122,6 +124,32 @@ Add-Content -Path "$env:USERPROFILE\.ssh\config" -Value $sshConfig
 4. Select `comfyui-dev`
 5. Wait for VSCode Server installation
 6. Use `File > Open Folder` to open `/workspace/ComfyUI`
+
+### Running ComfyUI from VSCode
+1. Open a new terminal window while connected to remote host in VSCode.
+2. Execute `python main.py --listen 0.0.0.0`
+
+### Debugging & Breakpoints
+1. Create launch.json in /workspace/ComfyUI/.vscode
+2. Add the following content:
+```
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "ComfyUI",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "main.py",
+            "console": "integratedTerminal",
+            "args": "--listen 0.0.0.0",
+            "python": "/workspace/miniconda/envs/comfy/bin/python",
+            "justMyCode": true
+        }
+    ]
+}
+```
+3. Press (F5) to run ComfyUI 
 
 ## Troubleshooting
 

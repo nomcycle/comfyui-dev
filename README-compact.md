@@ -35,6 +35,29 @@
    * Type "Connect to Host..."
    * Select "comfyui-dev"
    * Open folder: `/workspace/ComfyUI`
+   * Start ComfyUI: `python main.py --listen 0.0.0.0`
+
+# Debugging & Breakpoints
+1. Create launch.json in /workspace/ComfyUI/.vscode
+2. Add the following content:
+```
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "ComfyUI",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "main.py",
+            "console": "integratedTerminal",
+            "args": "--listen 0.0.0.0",
+            "python": "/workspace/miniconda/envs/comfy/bin/python",
+            "justMyCode": true
+        }
+    ]
+}
+```
+3. Press (F5) to run ComfyUI 
 
 Optional Environment Variables:
 * `COMFY_DEV_PYTHON_VERSION`: Set Python version
