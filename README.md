@@ -1,6 +1,6 @@
 # Secure ComfyUI Development Docker Container
 
-![Example Usage](./media/example.webm)
+![Example Usage](./media/example.gif)
 
 * [Github](https://github.com/nomcycle/comfyui-dev)
 * [Docker](https://hub.docker.com/repository/docker/nomcycle/comfyui-dev)
