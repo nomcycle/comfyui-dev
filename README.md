@@ -2,6 +2,8 @@
 
 This container provides a secure, remote, and persistent development environment for ComfyUI. By leveraging [Tailscale's](https://tailscale.com) secure WireGuard-based VPN service and [VSCode's remote development](https://code.visualstudio.com/docs/remote/remote-overview) capabilities, you can easily develop ComfyUI applications on rented GPU services like [RunPod](https://www.runpod.io/). The environment persists between sessions, allowing you to maintain your development setup while only paying for GPU time when needed.
 
+Follow the instructions listed below in order:
+
 - [ComfyUI-Dev](#comfyui-dev)
   - [Setup](#setup)
     - [Tailscale Setup](#tailscale-setup)
