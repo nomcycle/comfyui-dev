@@ -1,5 +1,8 @@
 # ComfyUI-Dev
 
+* [Github](https://github.com/nomcycle/comfyui-dev)
+* [Docker](https://hub.docker.com/repository/docker/nomcycle/comfyui-dev)
+
 This container provides a secure, remote, and persistent development environment for ComfyUI. By leveraging [Tailscale's](https://tailscale.com) secure WireGuard-based VPN service and [VSCode's remote development](https://code.visualstudio.com/docs/remote/remote-overview) capabilities, you can easily develop ComfyUI applications on rented GPU services like [RunPod](https://www.runpod.io/). The environment persists between sessions, allowing you to maintain your development setup while only paying for GPU time when needed.
 
 Follow the instructions listed below in order:
@@ -34,26 +37,26 @@ Follow the instructions listed below in order:
 3. Open the Command Palette (Ctrl + Shift + P)
 4. Search for and select `Open User Settings (JSON)`
 5. Add or append the following entries:
-   
-   *Setting `serverInstallPath` ensures remote extensions and VSCode configuration persist between container terminations*
-    ```json
-    "remote.SSH.remotePlatform": {
-        "comfyui-dev": "linux"
-    },
-    "remote.SSH.serverInstallPath": {
-        "comfy": "/workspace/"
-    }
-    ```
+
+*Setting `serverInstallPath` ensures remote extensions and VSCode configuration persist between container terminations*
+```json
+"remote.SSH.remotePlatform": {
+    "comfyui-dev": "linux"
+},
+"remote.SSH.serverInstallPath": {
+    "comfy": "/workspace/"
+}
+```
 6. Open a terminal in VSCode (Ctrl + Shift + `)
 7. Create the SSH directory: `mkdir -p ~/.ssh/`
 8. Generate SSH keys for your container: `ssh-keygen -t ed25519 -f ~/.ssh/comfyui-dev -C "comfy"`
 9. Add the following to `~/.ssh/config` to associate the private key with your container hostname:
-    ```
-    Host comfyui-dev
-        HostName comfyui-dev
-        User comfy
-        IdentityFile ~/.ssh/comfyui-dev
-    ```
+```
+Host comfyui-dev
+    HostName comfyui-dev
+    User comfy
+    IdentityFile ~/.ssh/comfyui-dev
+```
 10. Copy the contents of `~/.ssh/comfyui-dev.pub` for later use
 
 ### RunPod Setup
