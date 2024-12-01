@@ -23,7 +23,7 @@ A secure, remote, and persistent development environment for ComfyUI that works 
 - `COMFY_DEV_SSH_PUBKEY` - Your SSH public key for VSCode remote access
 
 **Optional:**
-- `COMFY_DEV_PYTHON_VERSION` - Python version for the environment (default: 3.10)
+- `COMFY_DEV_PYTHON_VERSION` - Python version for the environment (default: 3.12.4)
 - `COMFY_DEV_START_COMFY` - Set to `true` to start ComfyUI automatically
 - `COMFY_DEV_GIT_FORK` - URL to your ComfyUI fork (if using one)
 
