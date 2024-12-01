@@ -17,9 +17,6 @@ if ! command -v conda &> /dev/null; then
 
         source_conda
         conda init bash
-
-        echo '. /workspace/miniconda/etc/profile.d/conda.sh' >> /home/comfy/.bashrc
-        echo 'conda activate comfy' >> /home/comfy/.bashrc
     fi
 
     log_message "Restarting this script..."
@@ -38,6 +35,9 @@ else
 fi
 
 cd /workspace
+
+echo '. /workspace/miniconda/etc/profile.d/conda.sh' >> /home/comfy/.bashrc
+echo 'conda activate comfy' >> /home/comfy/.bashrc
 
 if [ ! -d "/workspace/ComfyUI" ]; then
     log_message "Cloning ComfyUI repository..."
