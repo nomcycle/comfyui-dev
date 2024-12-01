@@ -52,12 +52,10 @@ ENV PATH=/usr/local/cuda/bin:$PATH
 # Set shell options
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-RUN echo "root:letmein" | chpasswd
-
 # Create user and setup SSH
 RUN useradd -m -s /bin/bash comfy && \
+    echo "comfy ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers \
     # Consider using ARG for password or managing it through secrets
-    echo "comfy:letmein" | chpasswd && \
     # Configure SSH
     sed -i 's/#PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config && \
     sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin no/' /etc/ssh/sshd_config && \
