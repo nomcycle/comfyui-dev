@@ -41,7 +41,7 @@ cd /workspace
 
 if [ ! -d "/workspace/ComfyUI" ]; then
     log_message "Cloning ComfyUI repository..."
-    git clone https://github.com/comfyanonymous/ComfyUI
+    git clone ${COMFY_DEV_GIT_FORK}
     cd ComfyUI
     log_message "ComfyUI repository cloned."
 

@@ -8,6 +8,7 @@ This container provides a secure, remote, and persistent development environment
 Follow the instructions listed below in order:
 
 - [ComfyUI-Dev](#comfyui-dev)
+  - [Environment Variables](#environment-variables)
   - [Setup](#setup)
     - [Tailscale Setup](#tailscale-setup)
     - [VSCode Setup](#vscode-setup)
@@ -16,6 +17,13 @@ Follow the instructions listed below in order:
   - [Troubleshooting \& Gotchas](#troubleshooting--gotchas)
     - [Host Timeout](#host-timeout)
     - [Public Key Denied](#public-key-denied)
+
+## Environment Variables
+* Add your Tailscale auth secret to `COMFY_DEV_TAILSCALE_AUTH`
+* Add your SSH public key to `COMFY_DEV_SSH_PUBKEY`
+* (Optional) Set `COMFY_DEV_PYTHON_VERSION` to your preferred version
+* (Optional) Set `COMFY_DEV_START_COMFY` to `true` for automatic startup
+* (Optional) Set `COMFY_DEV_GIT_FORK` to your git fork of ComfyUI if you have one.
 
 ## Setup
 
@@ -76,11 +84,7 @@ Host comfyui-dev
     3. Name your pod
     4. Click **"Change Template"** and search for `nomcycle/comfyui`
     5. Select **"Edit Template"** and expand **"Environment Variables"**
-    6. Set the following:
-        * Add your Tailscale auth secret to `COMFY_DEV_TAILSCALE_AUTH`
-        * Add your SSH public key to `COMFY_DEV_SSH_PUBKEY`
-        * (Optional) Set `COMFY_DEV_PYTHON_VERSION` to your preferred version
-        * (Optional) Set `COMFY_DEV_START_COMFY` to `true` for automatic startup
+    6. Set your [environment variables](#environment-variables)
     7. Click **"Set Overrides"**
     8. Click **"Deploy On-Demand"** to launch your container
 
