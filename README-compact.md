@@ -38,8 +38,9 @@
    * Start ComfyUI: `python main.py --listen 0.0.0.0`
 
 # Debugging & Breakpoints
-1. Create launch.json in /workspace/ComfyUI/.vscode
-2. Add the following content:
+1. Install python vscode extension to remote instance.
+2. Create launch.json in /workspace/ComfyUI/.vscode
+3. Add the following content:
 ```
 {
     "version": "0.2.0",

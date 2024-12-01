@@ -130,8 +130,9 @@ Add-Content -Path "$env:USERPROFILE\.ssh\config" -Value $sshConfig
 2. Execute `python main.py --listen 0.0.0.0`
 
 ### Debugging & Breakpoints
-1. Create launch.json in /workspace/ComfyUI/.vscode
-2. Add the following content:
+1. When you install an extension in VSCode, you can install it in the current workspace, or remotely, install the python extension for the remote host.
+2. Create launch.json in /workspace/ComfyUI/.vscode
+3. Add the following content:
 ```
 {
     "version": "0.2.0",
