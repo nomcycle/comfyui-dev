@@ -86,5 +86,5 @@ This container provides a secure, remote, and persistent development environment
 4. In the dropdown, you shold see the `comfyui-dev` host, select it.
 5. Then it will prompt you for the platform, select **"Linux"**. 
 6. Select continue when prompted.
-
-*VSCode remote development server will then be downloaded to `/workspace` folder, once it's finished it will have vscode open the folder in the root of the cloned ComfyUI repo in: `/workspace/ComfyUI/`*.
+7. VSCode remote development server will then be downloaded to `/workspace` folder.
+8. Once it's finished vscode by default opens the home folder: `~/`. There isn't currently a way to change this. However, now you can perform **"File->Open Folder"** or (Ctrl + O) and type in `/workspace/ComfyUI`, and that folder will show up in your **"Recents Folders"** for quick access.
