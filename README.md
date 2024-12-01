@@ -2,9 +2,16 @@
 
 This container provides a secure, remote, and persistent development environment for ComfyUI. By leveraging [Tailscale's](https://tailscale.com) secure WireGuard-based VPN service and [VSCode's remote development](https://code.visualstudio.com/docs/remote/remote-overview) capabilities, you can easily develop ComfyUI applications on rented GPU services like [RunPod](https://www.runpod.io/). The environment persists between sessions, allowing you to maintain your development setup while only paying for GPU time when needed.
 
+- [ComfyUI-Dev](#comfyui-dev)
+  - [Setup](#setup)
+    - [Tailscale Setup](#tailscale-setup)
+    - [VSCode Setup](#vscode-setup)
+    - [RunPod Setup](#runpod-setup)
+    - [Logging In](#logging-in)
+
 ## Setup
 
-### Tailscale
+### Tailscale Setup
 
 1. Log in to Tailscale or create an account if you haven't already
 2. Install Tailscale on the device you want to use to access ComfyUI and log in
@@ -16,7 +23,7 @@ This container provides a secure, remote, and persistent development environment
 8. Select **"Generate key"**
 9. Copy the key to a secure location for later use
 
-### VSCode
+### VSCode Setup
 
 1. Open VSCode
 2. Open the Extensions view (Ctrl + `) and install:
@@ -47,7 +54,7 @@ This container provides a secure, remote, and persistent development environment
     ```
 10. Copy the contents of `~/.ssh/comfyui-dev.pub` for later use
 
-### RunPod
+### RunPod Setup
 
 1. Create a new secret in the RunPod web UI named `COMFY_DEV_TAILSCALE_AUTH` and paste your Tailscale API key
 2. Create another secret named `COMFY_DEV_SSH_PUBKEY` and paste your SSH public key
@@ -87,4 +94,4 @@ This container provides a secure, remote, and persistent development environment
 5. Then it will prompt you for the platform, select **"Linux"**. 
 6. Select continue when prompted.
 7. VSCode remote development server will then be downloaded to `/workspace` folder.
-8. Once it's finished vscode by default opens the home folder: `~/`. There isn't currently a way to change this. However, now you can perform **"File->Open Folder"** or (Ctrl + O) and type in `/workspace/ComfyUI`, and that folder will show up in your **"Recents Folders"** for quick access.
+8. Once it's finished vscode by default opens the home folder: `~/`. There isn't currently a way to change this in VSCode yet. However, now you can perform **"File->Open Folder"** or (Ctrl + O) and type in `/workspace/ComfyUI`, and that folder will show up in your **"Recents Folders"** for quick access.
