@@ -55,32 +55,38 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 # Create user and setup SSH
 RUN useradd -m -s /bin/bash comfy && \
-    echo "comfy ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers && \
     sed -i 's/#PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config && \
     sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin no/' /etc/ssh/sshd_config && \
     # Setup SSH directory
+    mkdir -p /run/sshd && \
     mkdir -p /home/comfy/.ssh && \
+    mkdir -p /home/comfy/startup && \
     chown -R comfy:comfy /home/comfy/.ssh && \
-    chmod 700 /home/comfy/.ssh && \
-    mkdir -p /home/comfy/startup
+    chmod 700 /home/comfy/.ssh
 
 # Install Tailscale
 RUN curl -fsSL https://tailscale.com/install.sh | sh
 
 # Copy and setup entrypoint scripts
-COPY ./container/entrypoint.sh /entrypoint.sh
+COPY ./container/entrypoint.sh /home/comfy/startup/entrypoint.sh
 COPY ./container/setup.sh /home/comfy/startup/setup.sh
 COPY ./container/start.sh /home/comfy/startup/start.sh
 COPY ./container/utils.sh /home/comfy/startup/utils.sh
 RUN chmod +x \
-    /entrypoint.sh \
+    /home/comfy/startup/entrypoint.sh \
     /home/comfy/startup/setup.sh \
     /home/comfy/startup/start.sh \
-    /home/comfy/startup/utils.sh 
+    /home/comfy/startup/utils.sh && \
+    chown -R comfy:comfy /home/comfy/startup
 
 # Setup workspace permissions
 VOLUME /workspace
 RUN chown -R comfy:comfy /workspace
 
-ENTRYPOINT ["/entrypoint.sh"]
+# Install uv for Python package management (as comfy user)
+USER comfy
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh
+USER root
+
+ENTRYPOINT ["/home/comfy/startup/entrypoint.sh"]
 CMD ["bash"]
