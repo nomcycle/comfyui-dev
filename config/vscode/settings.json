@@ -1,0 +1,16 @@
+{
+    "remote.SSH.remotePlatform": {
+        "comfyui-dev": "linux"
+    },
+    "remote.SSH.serverInstallPath": {
+        "comfy": "/workspace/"
+    },
+    "python.defaultInterpreterPath": "/workspace/.venv/bin/python",
+    "python.terminal.activateEnvironment": true,
+    "python.linting.enabled": true,
+    "python.linting.pylintEnabled": true,
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": true
+    }
+}

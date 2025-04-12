@@ -41,7 +41,7 @@
 1. Install python vscode extension to remote instance.
 2. Create launch.json in /workspace/ComfyUI/.vscode
 3. Add the following content:
-```
+```json
 {
     "version": "0.2.0",
     "configurations": [
@@ -52,23 +52,25 @@
             "program": "main.py",
             "console": "integratedTerminal",
             "args": "--listen 0.0.0.0",
-            "python": "/workspace/miniconda/envs/comfy/bin/python",
+            "python": "/workspace/.venv/bin/python",
             "justMyCode": true
         }
     ]
 }
 ```
-3. Press (F5) to run ComfyUI 
+4. Press (F5) to run ComfyUI 
 
-Optional Environment Variables:
-* `COMFY_DEV_PYTHON_VERSION`: Set Python version
-* `COMFY_DEV_START_COMFY`: Set "true" for auto-start
-* `COMFY_DEV_GIT_FORK`: Your ComfyUI fork URL
+# Environment Variables
 
-Troubleshooting:
-* Host Timeout: Remove old devices from Tailscale dashboard
-* Key Denied: Verify `COMFY_DEV_SSH_PUBKEY` is set correctly
+* `COMFY_DEV_TAILSCALE_AUTH`: Tailscale authentication key (required)
+* `COMFY_DEV_SSH_PUBKEY`: SSH public key for access (required)
+* `COMFY_DEV_PYTHON_VERSION`: Set Python version (default: 3.12.4)
+* `COMFY_DEV_START_COMFY`: Set "true" for auto-start (default: false)
+* `COMFY_DEV_GIT_FORK`: URL to your ComfyUI fork (default: official repo)
+* `COMFY_DEV_TAILSCALE_MACHINENAME`: Custom Tailscale machine name
 
-Container Source:
-* [Github](https://github.com/nomcycle/comfyui-dev)
-* [Docker](https://hub.docker.com/repository/docker/nomcycle/comfyui-dev)
+# Troubleshooting
+
+* **Tailscale Timeout**: Remove old devices from Tailscale dashboard
+* **SSH Key Error**: Verify `COMFY_DEV_SSH_PUBKEY` is set correctly
+* **Python Environment Issues**: Check logs with `docker logs comfyui-dev`

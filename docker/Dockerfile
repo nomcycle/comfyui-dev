@@ -1,24 +1,27 @@
-# FROM tensorflow/tensorflow:latest-gpu
-FROM nvidia/cuda:12.4.1-runtime-ubuntu22.04
+# Stage 1: Base system setup
+FROM nvidia/cuda:12.4.1-runtime-ubuntu22.04 AS base
 
-LABEL version="0.1" \
+LABEL version="0.2" \
       description="ComfyUI development using VSCode remote development over tailscale." \
       tag="latest"
 
-# Set environment variables
 ENV DEBIAN_FRONTEND=noninteractive \
     SHELL=/bin/bash
 
-# Create workspace directory
-WORKDIR /workspace
-
-# Install system packages in a single RUN command to reduce layers
+# Initial packages for repository management
 RUN apt-get update -y && \
     apt-get install -y --no-install-recommends \
         software-properties-common \
         python3-apt \
         python3-distutils && \
-    apt-get update -y && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Stage 2: Development dependencies
+FROM base AS dev-deps
+
+# Install development tools and dependencies
+RUN apt-get update -y && \
     apt-get install -y --no-install-recommends \
         wget \
         git \
@@ -41,17 +44,22 @@ RUN apt-get update -y && \
     rm -rf /var/lib/apt/lists/* && \
     echo "en_US.UTF-8 UTF-8" > /etc/locale.gen
 
+# Stage 3: CUDA setup
+FROM dev-deps AS cuda-setup
+
+# Install CUDA
 RUN wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-keyring_1.1-1_all.deb && \
     dpkg -i cuda-keyring_1.1-1_all.deb && \
-    apt-get update
+    apt-get update && \
+    apt-get -y install cuda-toolkit-12-4 && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
-# Need cuda 12.4 for ComfyUI-3D-Pack
-RUN apt-get -y install cuda-toolkit-12-4
 ENV CPLUS_INCLUDE_PATH=/usr/local/cuda/include
 ENV PATH=/usr/local/cuda/bin:$PATH
 
-# Set shell options
-SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+# Stage 4: User setup
+FROM cuda-setup AS user-setup
 
 # Create user and setup SSH
 RUN useradd -m -s /bin/bash comfy && \
@@ -64,29 +72,35 @@ RUN useradd -m -s /bin/bash comfy && \
     chown -R comfy:comfy /home/comfy/.ssh && \
     chmod 700 /home/comfy/.ssh
 
+# Stage 5: Tailscale setup
+FROM user-setup AS tailscale-setup
+
 # Install Tailscale
 RUN curl -fsSL https://tailscale.com/install.sh | sh
 
-# Copy and setup entrypoint scripts
-COPY ./container/entrypoint.sh /home/comfy/startup/entrypoint.sh
-COPY ./container/setup.sh /home/comfy/startup/setup.sh
-COPY ./container/start.sh /home/comfy/startup/start.sh
-COPY ./container/utils.sh /home/comfy/startup/utils.sh
-RUN chmod +x \
-    /home/comfy/startup/entrypoint.sh \
-    /home/comfy/startup/setup.sh \
-    /home/comfy/startup/start.sh \
-    /home/comfy/startup/utils.sh && \
+# Stage 6: Final image
+FROM tailscale-setup AS final
+
+# Copy startup scripts
+COPY ./docker/scripts/ /home/comfy/startup/
+RUN chmod +x /home/comfy/startup/*.sh && \
     chown -R comfy:comfy /home/comfy/startup
 
-# Setup workspace permissions
+# Create workspace directory
+RUN mkdir -p /workspace && \
+    chown -R comfy:comfy /workspace
+
+# Setup workspace as a volume
 VOLUME /workspace
-RUN chown -R comfy:comfy /workspace
 
 # Install uv for Python package management (as comfy user)
 USER comfy
 RUN curl -LsSf https://astral.sh/uv/install.sh | sh
 USER root
 
+# Set shell options for better script execution
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
+# Set the entry point and default command
 ENTRYPOINT ["/home/comfy/startup/entrypoint.sh"]
 CMD ["bash"]

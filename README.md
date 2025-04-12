@@ -9,12 +9,11 @@ A secure, remote, and persistent development environment for ComfyUI that works 
 
 ## Quick Start
 
-1. Set up Tailscale and get an auth key ([Instructions](#tailscale-setup))
-2. Configure VSCode with SSH keys ([Instructions](#vscode-setup))
-3. Create a RunPod deployment with the required environment variables ([Instructions](#runpod-setup))
-4. Connect to your development environment ([Instructions](#connecting-to-your-environment))
-5. Start ComfyUI ([Instructions](#running-comfyui-from-vscode))
-6. Debugging ([Instructions](#debugging--breakpoints))
+1. Set up Tailscale and get an auth key ([Instructions](./docs/quickstart.md#1-tailscale-setup))
+2. Configure VSCode with SSH keys ([Instructions](./docs/quickstart.md#2-vscode-setup))
+3. Create a RunPod deployment with the required environment variables ([Instructions](./docs/quickstart.md#3-runpod-setup))
+4. Connect to your development environment ([Instructions](./docs/quickstart.md#4-connect))
+5. Start developing with ComfyUI!
 
 ## Environment Variables
 
@@ -26,150 +25,58 @@ A secure, remote, and persistent development environment for ComfyUI that works 
 - `COMFY_DEV_PYTHON_VERSION` - Python version for the environment (default: 3.12.4)
 - `COMFY_DEV_START_COMFY` - Set to `true` to start ComfyUI automatically
 - `COMFY_DEV_GIT_FORK` - URL to your ComfyUI fork (if using one)
+- `COMFY_DEV_TAILSCALE_MACHINENAME` - Custom name for Tailscale device
 
-## Detailed Setup Instructions
+## Documentation
 
-### Tailscale Setup
+- [Quick Start Guide](./docs/quickstart.md)
+- [Debugging & Breakpoints](./docs/quickstart.md#debugging--breakpoints)
+- [Troubleshooting](./docs/quickstart.md#troubleshooting)
 
-1. Create or log in to your [Tailscale account](https://login.tailscale.com)
-2. Install Tailscale on your development machine
-3. Navigate to: `Settings > Keys` (or visit https://login.tailscale.com/admin/settings/keys)
-4. Generate a new auth key:
-   - Click **"Generate auth key..."**
-   - Add a description (e.g., "ComfyUI Dev Container")
-   - Enable **"Reusable"** (allows key reuse when recreating containers)
-   - Enable **"Ephemeral"** (auto-removes offline devices)
-   - Copy and save the generated key securely
+## Development
 
-### VSCode Setup
+### Building the Container
 
-1. Install Required Extensions:
-   - **Remote - SSH**
-   - **Python**
-
-2. Configure VSCode Settings:
-   - Open Command Palette (`Ctrl+Shift+P`)
-   - Search for `Open Settings (JSON)`
-   - Add these settings:
-```json
-{
-    "remote.SSH.remotePlatform": {
-        "comfyui-dev": "linux"
-    },
-    "remote.SSH.serverInstallPath": {
-        "comfy": "/workspace/"
-    }
-}
-```
-
-3. Set up SSH:
-
-**Linux/macOS:**
 ```bash
-# Create SSH directory
-mkdir -p ~/.ssh/
+# Make scripts executable
+chmod +x scripts/*.sh
 
-# Generate SSH key pair
-ssh-keygen -t ed25519 -f ~/.ssh/comfyui-dev -C "comfy"
+# Build the Docker image
+./scripts/build.sh
 
-# Add config entry
-cat >> ~/.ssh/config << EOF
-Host comfyui-dev
-    HostName comfyui-dev
-    User comfy
-    IdentityFile ~/.ssh/comfyui-dev
-EOF
+# Test the container locally
+./scripts/test.sh --tailscale-auth YOUR_TAILSCALE_AUTH_KEY
+
+# Push to Docker Hub (if you have permissions)
+./scripts/push.sh
 ```
 
-**Windows (PowerShell):**
-```powershell
-# Create SSH directory
-New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\.ssh"
+## Project Structure
 
-# Generate SSH key pair
-ssh-keygen -t ed25519 -f "$env:USERPROFILE\.ssh\comfyui-dev" -C "comfy"
-
-# Add config entry (creates new or appends to existing config)
-$sshConfig = @"
-
-Host comfyui-dev
-    HostName comfyui-dev
-    User comfy
-    IdentityFile $env:USERPROFILE\.ssh\comfyui-dev
-"@
-Add-Content -Path "$env:USERPROFILE\.ssh\config" -Value $sshConfig
+```
+comfyui-dev/
+├── docker/            # Docker-related files
+│   ├── Dockerfile     # Multi-stage Dockerfile
+│   └── scripts/       # Container scripts
+├── scripts/           # Build and utility scripts
+├── config/            # Configuration files
+│   ├── default.env    # Default environment settings
+│   └── vscode/        # VSCode configurations
+├── docs/              # Documentation
+└── media/             # Images and media files
 ```
 
-### RunPod Setup
+## Features
 
-1. Create Network Volume:
-   - Choose a region close to you
-   - Recommended size: 256GB
-   - Mount point: `/workspace`
+- **Secure Remote Access**: SSH and Tailscale VPN integration
+- **Persistent Development**: State saved between sessions
+- **GPU Acceleration**: CUDA 12.4 support for AI workloads
+- **VSCode Integration**: Seamless remote development
+- **Python Environment**: Optimized with uv package manager
+- **Debugging Support**: Full debugging capabilities
 
-2. Create RunPod Secrets:
-   - `COMFY_DEV_TAILSCALE_AUTH`: Your Tailscale auth key
-   - `COMFY_DEV_SSH_PUBKEY`: Contents of `~/.ssh/comfyui-dev.pub`
+## License
 
-3. Deploy Container:
-   - Select your Network Volume
-   - Choose GPU type
-   - Template: Search for `nomcycle/comfyui`
-   - Set environment variables
-   - Deploy
-
-### Connecting to Your Environment
-
-1. Open VSCode
-2. Press `Ctrl+Shift+P`
-3. Type `Connect to Host...`
-4. Select `comfyui-dev`
-5. Wait for VSCode Server installation
-6. Use `File > Open Folder` to open `/workspace/ComfyUI`
-
-### Running ComfyUI from VSCode
-1. Open a new terminal window while connected to remote host in VSCode.
-2. Execute `python main.py --listen 0.0.0.0`
-
-### Debugging & Breakpoints
-1. When you install an extension in VSCode, you can install it in the current workspace, or remotely, install the python extension for the remote host.
-2. Create launch.json in /workspace/ComfyUI/.vscode
-3. Add the following content:
-```
-{
-    "version": "0.2.0",
-    "configurations": [
-        {
-            "name": "ComfyUI",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "main.py",
-            "console": "integratedTerminal",
-            "args": "--listen 0.0.0.0",
-            "python": "/workspace/miniconda/envs/comfy/bin/python",
-            "justMyCode": true
-        }
-    ]
-}
-```
-3. Press (F5) to run ComfyUI 
-
-## Troubleshooting
-
-### Tailscale Device Conflicts
-If recreating containers quickly, manually remove old devices from Tailscale dashboard. Ensure current device is named `comfyui-dev`.
-
-### SSH Connection Issues
-- Verify environment variable `COMFY_DEV_SSH_PUBKEY` is set correctly
-- Check SSH config file format
-- Ensure private key permissions are correct: `chmod 600 ~/.ssh/comfyui-dev`
-
-### Container Startup
-Initial setup takes 2-5 minutes for:
-- Container deployment
-- Tailscale authentication
-- Python environment setup
-- ComfyUI repository cloning
-- Dependencies installation
+MIT License - See LICENSE file for details.
 
 Need more help? [Open an issue](https://github.com/nomcycle/comfyui-dev/issues)
