@@ -4,77 +4,61 @@ source /home/comfy/startup/utils.sh
 
 log_message "Setting up Python environment..."
 
-# Function to check Python version in a virtual environment
-check_venv_python_version() {
-    local venv_path="$1"
-    local expected_version="$2"
-    
-    if [ ! -f "${venv_path}/bin/python3" ]; then
-        return 1
-    fi
-    
-    # Get the version using --version (simpler approach)
-    local version_output=$(${venv_path}/bin/python3 --version 2>&1)
-    local actual_version=$(echo "$version_output" | cut -d' ' -f2)
-    
-    if [[ "$actual_version" == "$expected_version"* ]]; then
-        return 0
-    else
-        log_message "Python version mismatch: expected ${expected_version}, found ${actual_version}"
-        return 1
-    fi
-}
+# Validate environment variables and commands
+verify_env_vars "LOCAL_VENV" "WORKSPACE_VENV" "PYTHON_VERSION" "UV_PATH"
+validate_commands "mkdir" "rm" "grep" "sed"
 
-# Step 1: Create or check local virtual environment
-log_message "Setting up local Python virtual environment..."
-local_venv_ok=false
-
-if [ -d "${LOCAL_VENV}" ]; then
-    if check_venv_python_version "${LOCAL_VENV}" "${PYTHON_VERSION}"; then
-        log_message "Local Python virtual environment exists with correct version."
-        local_venv_ok=true
-    else
-        log_message "Local Python virtual environment exists but has wrong version. Recreating..."
-        rm -rf "${LOCAL_VENV}"
-    fi
-fi
-
-if [ "$local_venv_ok" = false ]; then
-    # Create local virtual environment with correct version
-    log_message "Creating local Python virtual environment with uv..."
-    ensure_dir "${LOCAL_VENV}" "comfy"
-    $UV_PATH venv "${LOCAL_VENV}" --python="${PYTHON_VERSION}"
-    log_success "Local Python virtual environment created successfully."
-fi
-
-# Step 2: Check workspace virtual environment and sync from local if needed
+# Step 1: Check if workspace virtual environment exists with correct Python version
 log_message "Checking workspace Python virtual environment..."
-workspace_venv_ok=false
+workspace_venv_valid=false
 
 if [ -d "${WORKSPACE_VENV}" ]; then
     if check_venv_python_version "${WORKSPACE_VENV}" "${PYTHON_VERSION}"; then
-        log_message "Workspace Python virtual environment exists with correct version."
-        workspace_venv_ok=true
+        log_message "Workspace virtual environment exists with correct Python version."
+        workspace_venv_valid=true
     else
-        log_message "Workspace Python virtual environment exists but has wrong version. Recreating..."
+        log_message "Workspace virtual environment exists but has wrong Python version. Recreating..."
         rm -rf "${WORKSPACE_VENV}"
     fi
 fi
 
-if [ "$workspace_venv_ok" = false ]; then
-    # Do manual initial sync from local to workspace (lsyncd will handle ongoing syncs)
-    log_message "Setting up workspace Python virtual environment from local..."
-    ensure_dir "${WORKSPACE_VENV}" "comfy"
-    sync_dirs "${LOCAL_VENV}" "${WORKSPACE_VENV}" "Python virtual environment"
-    log_success "Workspace Python virtual environment synced successfully."
+# Step 2: Create workspace virtual environment if it doesn't exist or has wrong version
+if [ "$workspace_venv_valid" = false ]; then
+    log_message "Creating new workspace Python virtual environment with uv..."
+    ensure_dir "${WORKSPACE_VENV}" "comfy" 
+    
+    $UV_PATH venv "${WORKSPACE_VENV}" --python="${PYTHON_VERSION}" || {
+        log_error "Failed to create workspace virtual environment"
+        exit 1
+    }
+    log_success "Workspace Python virtual environment created successfully."
 fi
 
-# Step 3: Always add LOCAL_VENV to .bashrc if not already there
+# Step 3: Create local virtual environment (always fresh at container startup)
+log_message "Setting up local Python virtual environment..."
+
+# If LOCAL_VENV exists (unlikely, but possible), remove it
+if [ -d "${LOCAL_VENV}" ]; then
+    log_message "Removing existing local virtual environment..."
+    rm -rf "${LOCAL_VENV}"
+fi
+
+# Create directory for local venv
+ensure_dir "${LOCAL_VENV}" "comfy"
+
+# Step 4: Sync from workspace to local
+log_message "Syncing virtual environment from workspace to local..."
+sync_dirs "${WORKSPACE_VENV}" "${LOCAL_VENV}" "Python virtual environment"
+
+# Step 5: Always add LOCAL_VENV to .bashrc
 if ! grep -q "source ${LOCAL_VENV}/bin/activate" /home/comfy/.bashrc; then
-    echo "source ${LOCAL_VENV}/bin/activate" >> /home/comfy/.bashrc
+    echo "source ${LOCAL_VENV}/bin/activate" >> /home/comfy/.bashrc || {
+        log_error "Failed to update .bashrc"
+        exit 1
+    }
     log_message "Added local virtual environment activation to .bashrc"
 fi
 
-# Step 4: Activate the local virtual environment
-source "${LOCAL_VENV}/bin/activate"
+# Step 6: Activate the local virtual environment
+source_venv
 log_success "Python environment setup complete."

@@ -8,15 +8,15 @@ settings {
     maxDelays = 0.5    -- Don't batch changes for too long
 }
 
--- Sync ComfyUI to network storage.
+-- Sync ComfyUI from local to network storage (one-way sync)
+-- This ensures persistent storage of changes made in the local environment
 sync {
     default.rsync,
-    source = "/home/comfy/ComfyUI",
-    target = "/workspace/ComfyUI",
-    exclude = {"__pycache__"}
+    source = "/home/comfy/ComfyUI",  -- local directory (faster access)
+    target = "/workspace/ComfyUI",    -- workspace directory (persistent storage)
+    exclude = {"__pycache__"},        -- exclude Python cache files
     -- Very small delay to ensure faster syncing
     delay = 0.5,
-    -- Initialize is important for the first sync
     rsync = {
         binary = "/usr/bin/rsync",
         archive = true,
@@ -27,15 +27,15 @@ sync {
     },
 }
 
--- Sync .venv to network storage.
+-- Sync Python virtual environment from local to network storage (one-way sync)
+-- This ensures persistent storage of installed packages
 sync {
     default.rsync,
-    source = "/home/comfy/.venv",
-    target = "/workspace/.venv",
-    exclude = {"__pycache__"}
+    source = "/home/comfy/.venv",    -- local directory (faster access)
+    target = "/workspace/.venv",     -- workspace directory (persistent storage)
+    exclude = {"__pycache__"},       -- exclude Python cache files
     -- Very small delay to ensure faster syncing
     delay = 0.5,
-    -- Initialize is important for the first sync
     rsync = {
         binary = "/usr/bin/rsync",
         archive = true,

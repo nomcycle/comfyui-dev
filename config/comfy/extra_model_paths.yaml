@@ -1,0 +1,15 @@
+comfyui:
+  base_path: /home/comfy/ComfyUI/
+  is_default: true
+  checkpoints: /home/comfy/synced_models/checkpoints/
+  clip: /home/comfy/synced_models/clip/
+  clip_vision: /home/comfy/synced_models/clip_vision/
+  configs: /home/comfy/synced_models/configs/
+  controlnet: /home/comfy/synced_models/controlnet/
+  diffusion_models: |
+              /home/comfy/synced_models/diffusion_models
+              /home/comfy/synced_models/unet
+  embeddings: /home/comfy/synced_models/embeddings/
+  loras: /home/comfy/synced_models/loras/
+  upscale_models: /home/comfy/synced_models/upscale_models/
+  vae: /home/comfy/synced_models/vae/

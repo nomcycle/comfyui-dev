@@ -4,6 +4,10 @@ source /home/comfy/startup/utils.sh
 
 log_message "Setting up directory synchronization..."
 
+# Validate environment variables
+verify_env_vars "LSYNCD_CONFIG_DIR" "LSYNCD_CONFIG_FILE" "CONFIG_DIR"
+validate_commands "lsyncd" "cp" "chown"
+
 # Set up lsyncd for automatic syncing between local and workspace
 log_message "Setting up lsyncd configuration..."
 
@@ -11,39 +15,42 @@ log_message "Setting up lsyncd configuration..."
 ensure_dir "${LSYNCD_CONFIG_DIR}" "comfy"
 ensure_dir "${CONFIG_DIR}/systemd/user/" "comfy"
 
-# Copy lsyncd configuration from container files
-if [ ! -f "/home/comfy/startup/config/lsyncd/lsyncd.conf.lua" ]; then
-    log_error "Lsyncd configuration file not found"
+# Verify source configuration files exist
+SOURCE_LSYNCD_CONFIG="/home/comfy/startup/config/lsyncd/lsyncd.conf.lua"
+SOURCE_LSYNCD_SERVICE="/home/comfy/startup/config/systemd/lsyncd.service"
+
+if [ ! -f "$SOURCE_LSYNCD_CONFIG" ]; then
+    log_error "Source lsyncd configuration file not found: $SOURCE_LSYNCD_CONFIG"
     exit 1
 fi
 
-if [ ! -f "/home/comfy/startup/config/systemd/lsyncd.service" ]; then
-    log_error "Lsyncd service file not found"
+if [ ! -f "$SOURCE_LSYNCD_SERVICE" ]; then
+    log_error "Source lsyncd service file not found: $SOURCE_LSYNCD_SERVICE"
     exit 1
 fi
 
-cp /home/comfy/startup/config/lsyncd/lsyncd.conf.lua "${LSYNCD_CONFIG_FILE}"
-cp /home/comfy/startup/config/systemd/lsyncd.service "${CONFIG_DIR}/systemd/user/"
+# Copy configuration files
+log_message "Copying lsyncd configuration files..."
+cp "$SOURCE_LSYNCD_CONFIG" "${LSYNCD_CONFIG_FILE}" || {
+    log_error "Failed to copy lsyncd configuration file"
+    exit 1
+}
+
+cp "$SOURCE_LSYNCD_SERVICE" "${CONFIG_DIR}/systemd/user/" || {
+    log_error "Failed to copy lsyncd service file"
+    exit 1
+}
 
 # Make sure the user owns the config files
-chown -R comfy:comfy "${CONFIG_DIR}"
-
-# Start lsyncd and verify it started
-log_message "Starting lsyncd service..."
-
-# Start lsyncd with nohup to keep it running after the script exits
-nohup lsyncd "${LSYNCD_CONFIG_FILE}" > /tmp/lsyncd.out 2>&1 &
-LSYNCD_PID=$!
-
-# Give lsyncd a moment to start
-sleep 2
-
-# Verify lsyncd is running
-if ! kill -0 $LSYNCD_PID 2>/dev/null; then
-    log_error "Failed to start lsyncd service. Check the output in /tmp/lsyncd.out"
-    cat /tmp/lsyncd.out
+chown -R comfy:comfy "${CONFIG_DIR}" || {
+    log_error "Failed to set ownership on config directory"
     exit 1
-fi
+}
 
-log_success "Lsyncd started with PID $LSYNCD_PID"
+# Verify configuration is valid
+verify_lsyncd_config "${LSYNCD_CONFIG_FILE}"
+
+# Start lsyncd service
+start_lsyncd "${LSYNCD_CONFIG_FILE}"
+
 log_success "Directory synchronization setup complete."
