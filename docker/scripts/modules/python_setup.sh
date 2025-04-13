@@ -33,7 +33,7 @@ fi
 log_message "Creating new workspace Python virtual environment with uv..."
 ensure_dir "${LOCAL_VENV}" "comfy" 
 
-$UV_PATH venv "${LOCAL_VENV}" --python="${PYTHON_VERSION}" || {
+$UV_PATH venv --link-mode=copy "${LOCAL_VENV}" --python="${PYTHON_VERSION}" || {
     log_error "Failed to create workspace virtual environment"
     exit 1
 }

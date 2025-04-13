@@ -153,13 +153,19 @@ run_as_comfy() {
 check_venv_python_version() {
     local venv_path="$1"
     local expected_version="$2"
+
+    log_message "Listing files in ${venv_path}/bin/ directory:"
+    ls -la ${venv_path}/bin/ --all || {
+        log_message "Python interpreter not found in virtual environment: ${venv_path}"
+        return 1
+    }
     
-    if [ ! -f "${venv_path}/bin/python3" ]; then
+    if [ ! -f "${venv_path}/bin/python" ]; then
         log_message "Python interpreter not found in virtual environment: ${venv_path}"
         return 1
     fi
     
-    local version_output=$(${venv_path}/bin/python3 --version 2>&1)
+    local version_output=$(${venv_path}/bin/python --version 2>&1)
     local actual_version=$(echo "$version_output" | cut -d' ' -f2)
     
     if [[ "$actual_version" != "$expected_version"* ]]; then

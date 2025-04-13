@@ -33,7 +33,7 @@ fi
 
 # Verify that we have synchronized both the Python environment and ComfyUI repository
 log_message "Verifying synchronized directories..."
-if [ ! -f "${LOCAL_VENV}/bin/python3" ]; then
+if [ ! -f "${LOCAL_VENV}/bin/python" ]; then
     log_warning "Local Python virtual environment might be corrupted, re-syncing from workspace..."
     sync_dirs "${WORKSPACE_VENV}" "${LOCAL_VENV}" "Python virtual environment"
 fi
