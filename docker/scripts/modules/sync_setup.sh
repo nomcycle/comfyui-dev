@@ -15,6 +15,9 @@ log_message "Setting up lsyncd configuration..."
 ensure_dir "${LSYNCD_CONFIG_DIR}" "comfy"
 ensure_dir "${CONFIG_DIR}/systemd/user/" "comfy"
 
+log_message "Pre-creating cursor-server directory for lsyncd..."
+mkdir -p /home/comfy/.cursor-server
+
 # Verify source configuration files exist
 SOURCE_LSYNCD_CONFIG="/home/comfy/startup/config/lsyncd/lsyncd.conf.lua"
 SOURCE_LSYNCD_SERVICE="/home/comfy/startup/config/systemd/lsyncd.service"

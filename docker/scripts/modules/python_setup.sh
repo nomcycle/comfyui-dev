@@ -22,20 +22,7 @@ if [ -d "${WORKSPACE_VENV}" ]; then
     fi
 fi
 
-# Step 2: Create workspace virtual environment if it doesn't exist or has wrong version
-if [ "$workspace_venv_valid" = false ]; then
-    log_message "Creating new workspace Python virtual environment with uv..."
-    ensure_dir "${WORKSPACE_VENV}" "comfy" 
-    
-    $UV_PATH venv "${WORKSPACE_VENV}" --python="${PYTHON_VERSION}" || {
-        log_error "Failed to create workspace virtual environment"
-        exit 1
-    }
-    log_success "Workspace Python virtual environment created successfully."
-fi
-
-# Step 3: Create local virtual environment (always fresh at container startup)
-log_message "Setting up local Python virtual environment..."
+# Step 2: Always create venv in local directory.
 
 # If LOCAL_VENV exists (unlikely, but possible), remove it
 if [ -d "${LOCAL_VENV}" ]; then
@@ -43,12 +30,23 @@ if [ -d "${LOCAL_VENV}" ]; then
     rm -rf "${LOCAL_VENV}"
 fi
 
-# Create directory for local venv
-ensure_dir "${LOCAL_VENV}" "comfy"
+log_message "Creating new workspace Python virtual environment with uv..."
+ensure_dir "${LOCAL_VENV}" "comfy" 
 
-# Step 4: Sync from workspace to local
-log_message "Syncing virtual environment from workspace to local..."
-sync_dirs "${WORKSPACE_VENV}" "${LOCAL_VENV}" "Python virtual environment"
+$UV_PATH venv "${LOCAL_VENV}" --python="${PYTHON_VERSION}" || {
+    log_error "Failed to create workspace virtual environment"
+    exit 1
+}
+log_success "Workspace Python virtual environment created successfully."
+
+# Step 3: If our workspace venv is invalid, then we sync the new venv from local to workspace.
+if [ "$workspace_venv_valid" = false ]; then
+    log_message "Syncing virtual environment from local to workspace..."
+    sync_dirs "${LOCAL_VENV}" "${WORKSPACE_VENV}" "Python virtual environment"
+else
+    log_message "Syncing virtual environment from workspace to local..."
+    sync_dirs "${WORKSPACE_VENV}" "${LOCAL_VENV}" "Python virtual environment"
+fi
 
 # Step 5: Always add LOCAL_VENV to .bashrc
 if ! grep -q "source ${LOCAL_VENV}/bin/activate" /home/comfy/.bashrc; then

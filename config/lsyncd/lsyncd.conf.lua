@@ -34,8 +34,24 @@ sync {
     source = "/home/comfy/.venv",    -- local directory (faster access)
     target = "/workspace/.venv",     -- workspace directory (persistent storage)
     exclude = {"__pycache__"},       -- exclude Python cache files
-    -- Very small delay to ensure faster syncing
-    delay = 0.5,
+    delay = 10,
+    rsync = {
+        binary = "/usr/bin/rsync",
+        archive = true,
+        compress = false,
+        verbose = true,
+        -- Additional rsync options for reliability
+        _extra = {"--delete"},
+    },
+}
+
+-- Sync cursor-server from local to network storage (one-way sync)
+sync {
+    default.rsync,
+    source = "/home/comfy/.cursor-server",    -- local directory (faster access)
+    target = "/workspace/.cursor-server",     -- workspace directory (persistent storage)
+    exclude = {"data"},                       -- exclude data directory
+    delay = 20,
     rsync = {
         binary = "/usr/bin/rsync",
         archive = true,
