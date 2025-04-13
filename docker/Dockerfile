@@ -38,6 +38,8 @@ RUN apt-get update -y && \
         ca-certificates \
         build-essential \
         lsb-release \
+        lsyncd \
+        rsync \
         bash && \
     ln -s /usr/lib/python3/dist-packages/apt_pkg.cpython-*-x86_64-linux-gnu.so /usr/lib/python3/dist-packages/apt_pkg.so && \
     apt-get clean && \
@@ -81,9 +83,15 @@ RUN curl -fsSL https://tailscale.com/install.sh | sh
 # Stage 6: Final image
 FROM tailscale-setup AS final
 
-# Copy startup scripts
-COPY ./docker/scripts/ /home/comfy/startup/
-RUN chmod +x /home/comfy/startup/*.sh && \
+# Copy startup scripts and configuration files
+COPY ./docker/scripts/ /home/comfy/startup/scripts/
+COPY ./config/ /home/comfy/startup/config/
+RUN chmod +x /home/comfy/startup/scripts/*.sh && \
+    chmod +x /home/comfy/startup/scripts/modules/*.sh && \
+    ln -sf /home/comfy/startup/scripts/utils.sh /home/comfy/startup/utils.sh && \
+    ln -sf /home/comfy/startup/scripts/entrypoint.sh /home/comfy/startup/entrypoint.sh && \
+    ln -sf /home/comfy/startup/scripts/setup.sh /home/comfy/startup/setup.sh && \
+    ln -sf /home/comfy/startup/scripts/start.sh /home/comfy/startup/start.sh && \
     chown -R comfy:comfy /home/comfy/startup
 
 # Create workspace directory

@@ -24,8 +24,10 @@ print_success() {
 print_info "Building Docker image: ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}"
 print_info "Using configuration from: ${SCRIPT_DIR}/../config/default.env"
 
-# Build the Docker image
+# Build the Docker image with BuildKit enabled
+export DOCKER_BUILDKIT=1
 docker build \
+    --build-arg BUILDKIT_INLINE_CACHE=1 \
     -t "${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}" \
     -f "${SCRIPT_DIR}/../docker/Dockerfile" \
     "${SCRIPT_DIR}/.." \

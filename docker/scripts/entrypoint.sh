@@ -4,6 +4,8 @@ source /home/comfy/startup/utils.sh
 # Setup standard PATH 
 setup_path
 
+# No SIGTERM handler - letting lsyncd handle continuous syncing
+
 # Dynamically construct COMFY_ENV_VARS
 COMFY_ENV_VARS=$(env | grep "COMFY_DEV_" | awk '{print $1}' | paste -sd " " -)
 export COMFY_ENV_VARS

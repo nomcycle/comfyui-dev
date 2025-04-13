@@ -1,0 +1,11 @@
+[Unit]
+Description=Live Syncing Daemon
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/lsyncd /home/comfy/.config/lsyncd/lsyncd.conf.lua
+Restart=on-failure
+
+[Install]
+WantedBy=default.target
