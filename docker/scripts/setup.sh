@@ -19,6 +19,12 @@ ls -la /workspace --all || {
 log_message "Using Python version: ${PYTHON_VERSION}"
 
 # Initialize setup components in the correct order with proper validation
+log_message "======================= CURSOR SETUP ========================"
+source /home/comfy/startup/scripts/modules/cursor_setup.sh || {
+    log_error "Cursor setup failed"
+    exit 1
+}
+
 log_message "======================= PYTHON SETUP ========================"
 source /home/comfy/startup/scripts/modules/python_setup.sh || {
     log_error "Python setup failed"
