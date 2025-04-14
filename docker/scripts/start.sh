@@ -10,12 +10,6 @@ validate_commands "sleep"
 # Setup standard PATH
 setup_path
 
-# Verify Python is now accessible
-if ! ${UV_PATH} run python --version &>/dev/null; then
-    log_error "Cannot execute Python from ${LOCAL_PYTHON}/bin"
-    exit 1
-fi
-
 # Install required packages - script will exit on failure
 source /home/comfy/startup/scripts/modules/packages_setup.sh
 
@@ -31,6 +25,8 @@ fi
 # Start ComfyUI if requested
 if [ "${COMFY_DEV_START_COMFY:-false}" = "true" ]; then
     log_message "Starting ComfyUI..."
+
+    source ${LOCAL_PYTHON}/.venv/bin/activate
     
     # Verify ComfyUI directory and navigate to it
     verify_dir "${LOCAL_COMFYUI}" "local ComfyUI directory"
