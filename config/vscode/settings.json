@@ -5,7 +5,7 @@
     "remote.SSH.serverInstallPath": {
         "comfy": "/workspace/"
     },
-    "python.defaultInterpreterPath": "/workspace/.venv/bin/python",
+    "python.defaultInterpreterPath": "/home/comfy/python/bin/python",
     "python.terminal.activateEnvironment": true,
     "python.linting.enabled": true,
     "python.linting.pylintEnabled": true,

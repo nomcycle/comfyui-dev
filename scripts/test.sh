@@ -98,6 +98,7 @@ print_info "Using Python version: $PYTHON_VERSION"
 print_info "Using SSH folder path: $SSH_FOLDER_PATH"
 
 # Run the Docker container
+# Run the Docker container
 docker run \
   --name comfyui-dev \
   --gpus all \

@@ -27,12 +27,12 @@ sync {
     },
 }
 
--- Sync Python virtual environment from local to network storage (one-way sync)
+-- Sync Python installation from local to network storage (one-way sync)
 -- This ensures persistent storage of installed packages
 sync {
     default.rsync,
-    source = "/home/comfy/.venv",    -- local directory (faster access)
-    target = "/workspace/.venv",     -- workspace directory (persistent storage)
+    source = "/home/comfy/python",    -- local directory (faster access)
+    target = "/workspace/python",     -- workspace directory (persistent storage)
     exclude = {"__pycache__"},       -- exclude Python cache files
     delay = 10,
     rsync = {

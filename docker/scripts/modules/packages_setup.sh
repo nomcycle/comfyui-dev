@@ -5,10 +5,8 @@ source /home/comfy/startup/utils.sh
 log_message "Installing required Python packages..."
 
 # Validate environment variables 
-verify_env_vars "LOCAL_COMFYUI" "LOCAL_VENV" "UV_PATH"
+verify_env_vars "UV_PATH" "LOCAL_COMFYUI" "LOCAL_PYTHON" "UV_PATH"
 validate_commands "which"
-
-# Python command will be available after activation
 
 # Verify ComfyUI directory
 verify_dir "${LOCAL_COMFYUI}" "local ComfyUI directory"
@@ -18,17 +16,6 @@ cd "${LOCAL_COMFYUI}" || {
     log_error "Failed to navigate to local ComfyUI directory"
     exit 1
 }
-
-# Activate the virtual environment - will exit if activation fails
-source_venv
-
-# Now we can verify python is available
-if ! command -v python &> /dev/null; then
-    log_error "Python command still not available after virtual environment activation"
-    exit 1
-fi
-
-log_message "Using Python: $(which python) ($(python --version 2>&1))"
 
 # Verify requirements.txt exists
 if [ ! -f "requirements.txt" ]; then
@@ -41,6 +28,8 @@ if [ ! -f "${UV_PATH}" ]; then
     log_error "uv command not found at ${UV_PATH}"
     exit 1
 fi
+
+source "${LOCAL_PYTHON}/.venv/bin/activate"
 
 # Install required packages with strict error checking
 log_message "Upgrading pip with uv..."

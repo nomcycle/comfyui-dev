@@ -4,7 +4,7 @@ source /home/comfy/startup/utils.sh
 log_message "Setting up ComfyUI development environment..."
 
 # Validate environment variables
-verify_env_vars "PYTHON_VERSION" "WORKSPACE_DIR" "WORKSPACE_VENV" "WORKSPACE_COMFYUI" "LOCAL_VENV" "LOCAL_COMFYUI"
+verify_env_vars "PYTHON_VERSION" "WORKSPACE_DIR" "WORKSPACE_PYTHON" "WORKSPACE_COMFYUI" "LOCAL_PYTHON" "LOCAL_COMFYUI"
 
 # Setup standard PATH
 setup_path

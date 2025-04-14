@@ -4,20 +4,17 @@ source /home/comfy/startup/utils.sh
 log_message "Starting ComfyUI development environment..."
 
 # Validate environment variables
-verify_env_vars "LOCAL_VENV" "LOCAL_COMFYUI" "LSYNCD_CONFIG_FILE"
+verify_env_vars "UV_PATH" "LOCAL_PYTHON" "LOCAL_COMFYUI" "LSYNCD_CONFIG_FILE"
 validate_commands "sleep"
-
-# Verify python will be available in the virtual environment
-if [ ! -f "${LOCAL_VENV}/bin/python" ]; then
-    log_error "Python not found in virtual environment: ${LOCAL_VENV}/bin/python"
-    exit 1
-fi
 
 # Setup standard PATH
 setup_path
 
-# Activate the virtual environment - will exit if activation fails
-source_venv
+# Verify Python is now accessible
+if ! ${UV_PATH} run python --version &>/dev/null; then
+    log_error "Cannot execute Python from ${LOCAL_PYTHON}/bin"
+    exit 1
+fi
 
 # Install required packages - script will exit on failure
 source /home/comfy/startup/scripts/modules/packages_setup.sh
@@ -29,18 +26,6 @@ if ! is_process_running "lsyncd"; then
     source /home/comfy/startup/scripts/modules/sync_setup.sh
 else
     log_success "Lsyncd is running"
-fi
-
-# Verify that we have synchronized both the Python environment and ComfyUI repository
-log_message "Verifying synchronized directories..."
-if [ ! -f "${LOCAL_VENV}/bin/python" ]; then
-    log_warning "Local Python virtual environment might be corrupted, re-syncing from workspace..."
-    sync_dirs "${WORKSPACE_VENV}" "${LOCAL_VENV}" "Python virtual environment"
-fi
-
-if [ ! -d "${LOCAL_COMFYUI}" ] || [ ! -f "${LOCAL_COMFYUI}/main.py" ]; then
-    log_warning "Local ComfyUI repository might be corrupted, re-syncing from workspace..."
-    sync_dirs "${WORKSPACE_COMFYUI}" "${LOCAL_COMFYUI}" "ComfyUI repository"
 fi
 
 # Start ComfyUI if requested

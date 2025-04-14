@@ -47,21 +47,21 @@ RUN apt-get update -y && \
     echo "en_US.UTF-8 UTF-8" > /etc/locale.gen
 
 # Stage 3: CUDA setup
-FROM dev-deps AS cuda-setup
+# FROM dev-deps AS cuda-setup
 
 # Install CUDA
-RUN wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-keyring_1.1-1_all.deb && \
-    dpkg -i cuda-keyring_1.1-1_all.deb && \
-    apt-get update && \
-    apt-get -y install cuda-toolkit-12-4 && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+# RUN wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-keyring_1.1-1_all.deb && \
+#     dpkg -i cuda-keyring_1.1-1_all.deb && \
+#     apt-get update && \
+#     apt-get -y install cuda-toolkit-12-4 && \
+#     apt-get clean && \
+#     rm -rf /var/lib/apt/lists/*
 
-ENV CPLUS_INCLUDE_PATH=/usr/local/cuda/include
-ENV PATH=/usr/local/cuda/bin:$PATH
+# ENV CPLUS_INCLUDE_PATH=/usr/local/cuda/include
+# ENV PATH=/usr/local/cuda/bin:$PATH
 
 # Stage 4: User setup
-FROM cuda-setup AS user-setup
+FROM dev-deps AS user-setup
 
 # Create user and setup SSH
 RUN useradd -m -s /bin/bash comfy && \

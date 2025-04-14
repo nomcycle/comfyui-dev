@@ -11,10 +11,10 @@ set -E
 #---------------------------------------------------------------
 # Common paths
 export WORKSPACE_DIR="/workspace"
-export WORKSPACE_VENV="${WORKSPACE_DIR}/.venv"
+export WORKSPACE_PYTHON="${WORKSPACE_DIR}/python"
 export WORKSPACE_COMFYUI="${WORKSPACE_DIR}/ComfyUI"
 export WORKSPACE_CURSOR="${WORKSPACE_DIR}/.cursor-server"
-export LOCAL_VENV="${HOME}/.venv"
+export LOCAL_PYTHON="${HOME}/python"
 export LOCAL_COMFYUI="${HOME}/ComfyUI"
 export LOCAL_CURSOR="${HOME}/.cursor-server"
 export CONFIG_DIR="${HOME}/.config"
@@ -147,12 +147,12 @@ run_as_comfy() {
 }
 
 #---------------------------------------------------------------
-# VIRTUAL ENVIRONMENT MANAGEMENT
+# PYTHON ENVIRONMENT MANAGEMENT
 #---------------------------------------------------------------
 
-# Check Python version in a virtual environment
+# Check Python version in installation
 # Returns 0 if version matches, 1 if not
-check_venv_python_version() {
+check_python_version() {
     local python_version_path="$1"
     local expected_version="$2"
 
@@ -172,34 +172,7 @@ check_venv_python_version() {
     return 0
 }
 
-# Activate virtual environment - exits on failure
-source_venv() {
-    if [ ! -f "${LOCAL_VENV}/bin/activate" ]; then
-        log_error "Local virtual environment activation script not found"
-        exit 1
-    fi
-    
-    # Direct source to ensure environment changes propagate
-    source "${LOCAL_VENV}/bin/activate"
-    
-    # Export VIRTUAL_ENV to ensure it's set correctly for all processes
-    export VIRTUAL_ENV="${LOCAL_VENV}"
-    export PATH="${LOCAL_VENV}/bin:$PATH"
-    
-    # Verify Python interpreter exists in the virtual environment
-    if [ ! -f "${LOCAL_VENV}/bin/python" ]; then
-        log_error "Python interpreter not found in virtual environment"
-        exit 1
-    fi
-    
-    # Verify we can execute python
-    if ! "${LOCAL_VENV}/bin/python" --version &>/dev/null; then
-        log_error "Cannot execute Python from virtual environment"
-        exit 1
-    fi
-    
-    log_message "Activated virtual environment: ${LOCAL_VENV}"
-}
+# Initialize Python environment - function removed as we now use PATH directly
 
 #---------------------------------------------------------------
 # DIRECTORY MANAGEMENT HELPERS
@@ -275,7 +248,6 @@ sync_dirs() {
     ensure_dir "$(dirname "$target_dir")"
     
     log_message "Syncing $description from $source_dir to $target_dir"
-    
     rsync -a --delete "$source_dir/" "$target_dir/" || {
         log_error "Failed to sync $description"
         exit 1
