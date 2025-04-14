@@ -5,7 +5,7 @@ source /home/comfy/startup/utils.sh
 log_message "Setting up Python environment..."
 
 # Validate environment variables and commands
-verify_env_vars "LOCAL_VENV" "WORKSPACE_VENV" "PYTHON_VERSION" "UV_PATH"
+verify_env_vars "LOCAL_VENV" "WORKSPACE_DIR" "WORKSPACE_VENV" "PYTHON_VERSION" "UV_PATH"
 validate_commands "mkdir" "rm" "grep" "sed"
 
 # Step 1: Check if workspace virtual environment exists with correct Python version
@@ -13,7 +13,8 @@ log_message "Checking workspace Python virtual environment..."
 workspace_venv_valid=false
 
 if [ -d "${WORKSPACE_VENV}" ]; then
-    if check_venv_python_version "${WORKSPACE_VENV}" "${PYTHON_VERSION}"; then
+    # Read current python version from .python-version
+    if check_venv_python_version "${WORKSPACE_DIR}/.python-version" "${PYTHON_VERSION}"; then
         log_message "Workspace virtual environment exists with correct Python version."
         workspace_venv_valid=true
     else
@@ -21,6 +22,9 @@ if [ -d "${WORKSPACE_VENV}" ]; then
         rm -rf "${WORKSPACE_VENV}"
     fi
 fi
+
+# Write selected PYTHON_VERSION to file .python-version
+echo "${PYTHON_VERSION}" > "${WORKSPACE_DIR}/.python-version"
 
 # Step 2: Always create venv in local directory.
 
@@ -30,7 +34,7 @@ if [ -d "${LOCAL_VENV}" ]; then
     rm -rf "${LOCAL_VENV}"
 fi
 
-log_message "Creating new workspace Python virtual environment with uv..."
+log_message "Creating new workspace Python copied virtual environment with uv..."
 ensure_dir "${LOCAL_VENV}" "comfy" 
 
 $UV_PATH venv --link-mode=copy "${LOCAL_VENV}" --python="${PYTHON_VERSION}" || {

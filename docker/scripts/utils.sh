@@ -153,29 +153,22 @@ run_as_comfy() {
 # Check Python version in a virtual environment
 # Returns 0 if version matches, 1 if not
 check_venv_python_version() {
-    local venv_path="$1"
+    local python_version_path="$1"
     local expected_version="$2"
 
-    log_message "Listing files in ${venv_path}/bin/ directory:"
-    ls -la ${venv_path}/bin/ --all || {
-        log_message "Python interpreter not found in virtual environment: ${venv_path}"
+    if [ ! -f "$python_version_path" ]; then
+        log_message "Python version not found at path: ${python_version_path}"
         return 1
-    }
+    fi
+
+    local current_python_version=$(cat "$python_version_path")
     
-    if [ ! -f "${venv_path}/bin/python" ]; then
-        log_message "Python interpreter not found in virtual environment: ${venv_path}"
+    if [[ "$current_python_version" != "$expected_version"* ]]; then
+        log_message "Python version mismatch: expected ${expected_version}, found ${current_python_version}"
         return 1
     fi
     
-    local version_output=$(${venv_path}/bin/python --version 2>&1)
-    local actual_version=$(echo "$version_output" | cut -d' ' -f2)
-    
-    if [[ "$actual_version" != "$expected_version"* ]]; then
-        log_message "Python version mismatch in ${venv_path}: expected ${expected_version}, found ${actual_version}"
-        return 1
-    fi
-    
-    log_message "Python version verified in ${venv_path}: ${actual_version}"
+    log_message "Python version verified: ${current_python_version}"
     return 0
 }
 

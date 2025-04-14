@@ -50,7 +50,7 @@ sync {
     default.rsync,
     source = "/home/comfy/.cursor-server",    -- local directory (faster access)
     target = "/workspace/.cursor-server",     -- workspace directory (persistent storage)
-    exclude = {"data"},                       -- exclude data directory
+    exclude = {"data", "__pycache__"},                       -- exclude data directory
     delay = 20,
     rsync = {
         binary = "/usr/bin/rsync",
