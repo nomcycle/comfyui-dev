@@ -44,7 +44,7 @@ ${UV_PATH} pip install --upgrade pip || {
 }
 
 log_message "Installing PyTorch..."
-${UV_PATH} pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu124 || {
+${UV_PATH} pip install --pre torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/cu128 || {
     log_error "Failed to install PyTorch"
     exit 1
 }

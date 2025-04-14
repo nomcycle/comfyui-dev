@@ -58,5 +58,16 @@ else
     sync_dirs "${WORKSPACE_PYTHON}" "${LOCAL_PYTHON}" "Python site-packages"
 fi
 
+# Step 4: Add Python virtual environment activation to .bashrc
+log_message "Adding Python virtual environment activation to .bashrc..."
+
+# Create .bashrc file (assuming it doesn't exist)
+echo "# Automatically activate Python virtual environment" >> "/home/comfy/.bashrc"
+echo "source ${LOCAL_PYTHON}/.venv/bin/activate" >> "/home/comfy/.bashrc"
+log_success "Created .bashrc with virtual environment activation"
+
+# Set proper permissions for .bashrc
+chown comfy:comfy "/home/comfy/.bashrc"
+chmod 644 "/home/comfy/.bashrc"
 
 log_success "Python environment setup complete."
