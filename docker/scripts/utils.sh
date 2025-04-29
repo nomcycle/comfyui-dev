@@ -61,7 +61,25 @@ log_success() {
 handle_error() {
     local exit_code=$?
     local line_number=$1
-    log_error "Error in script at line $line_number with exit code $exit_code"
+    local last_command=${BASH_COMMAND}
+
+    log_error "Error in script at line $line_number (exit code $exit_code): '$last_command'"
+
+    # Print stack trace
+    local i=0
+    local stack_size=${#FUNCNAME[@]}
+    # Start from 1 to skip handle_error itself
+    log_error "Call Stack:"
+    for (( i=1; i<stack_size; i++ )); do
+        local func="${FUNCNAME[$i]}"
+        local line="${BASH_LINENO[$((i-1))]}" # Line number where the function at index i was called
+        local source="${BASH_SOURCE[$i]}"
+        # Handle cases where function name might be empty or 'main'
+        [[ "$func" == "main" ]] || [[ -z "$func" ]] && func="top-level"
+        log_error "  at ${func}() in ${source}:${line}"
+    done
+
+    # Exit with the original error code
     exit $exit_code
 }
 
@@ -114,17 +132,14 @@ validate_commands() {
 # UTILITY FUNCTIONS
 #---------------------------------------------------------------
 
-# Path management - exits on failure
+# Path management - exits on failure via trap
 setup_path() {
     log_message "Setting up PATH environment variable"
     
     # Verify key directories exist
     if [ ! -d "${HOME}/.local/bin" ]; then
         log_message "Creating ~/.local/bin directory"
-        mkdir -p "${HOME}/.local/bin" || {
-            log_error "Failed to create ~/.local/bin directory"
-            exit 1
-        }
+        mkdir -p "${HOME}/.local/bin"
     fi
     
     # Configure standard PATH additions for all scripts
@@ -178,7 +193,7 @@ check_python_version() {
 # DIRECTORY MANAGEMENT HELPERS
 #---------------------------------------------------------------
 
-# Create directory with proper permissions - exits on failure
+# Create directory with proper permissions - exits on failure via trap
 ensure_dir() {
     local dir="$1"
     local owner="${2:-comfy}"
@@ -190,17 +205,11 @@ ensure_dir() {
     
     if [ ! -d "$dir" ]; then
         log_message "Creating directory: $dir"
-        mkdir -p "$dir" || {
-            log_error "Failed to create directory: $dir"
-            exit 1
-        }
+        mkdir -p "$dir"
     fi
     
     if [ "$owner" != "root" ]; then
-        chown -R "$owner:$owner" "$dir" || {
-            log_error "Failed to set ownership on directory: $dir"
-            exit 1
-        }
+        chown -R "$owner:$owner" "$dir"
     fi
     
     log_message "Directory ensured: $dir"
@@ -228,7 +237,7 @@ verify_dir() {
 # SYNC HELPERS
 #---------------------------------------------------------------
 
-# Sync directories using rsync - exits on failure
+# Sync directories using rsync - exits on failure via trap
 sync_dirs() {
     local source_dir="$1"
     local target_dir="$2"
@@ -248,10 +257,7 @@ sync_dirs() {
     ensure_dir "$(dirname "$target_dir")"
     
     log_message "Syncing $description from $source_dir to $target_dir"
-    rsync -a --delete "$source_dir/" "$target_dir/" || {
-        log_error "Failed to sync $description"
-        exit 1
-    }
+    rsync -a --delete "$source_dir/" "$target_dir/"
     
     log_success "Successfully synced $description"
 }
@@ -279,7 +285,7 @@ verify_lsyncd_config() {
     log_message "Lsyncd configuration verified: $config_file"
 }
 
-# Start lsyncd service - exits on failure
+# Start lsyncd service - exits on failure via trap
 start_lsyncd() {
     local config_file="$1"
     

@@ -34,21 +34,10 @@ fi
 
 # Copy configuration files
 log_message "Copying lsyncd configuration files..."
-cp "$SOURCE_LSYNCD_CONFIG" "${LSYNCD_CONFIG_FILE}" || {
-    log_error "Failed to copy lsyncd configuration file"
-    exit 1
-}
+cp "$SOURCE_LSYNCD_CONFIG" "${LSYNCD_CONFIG_FILE}"
+cp "$SOURCE_LSYNCD_SERVICE" "${CONFIG_DIR}/systemd/user/"
 
-cp "$SOURCE_LSYNCD_SERVICE" "${CONFIG_DIR}/systemd/user/" || {
-    log_error "Failed to copy lsyncd service file"
-    exit 1
-}
-
-# Make sure the user owns the config files
-chown -R comfy:comfy "${CONFIG_DIR}" || {
-    log_error "Failed to set ownership on config directory"
-    exit 1
-}
+chown -R comfy:comfy "${CONFIG_DIR}"
 
 # Verify configuration is valid
 verify_lsyncd_config "${LSYNCD_CONFIG_FILE}"

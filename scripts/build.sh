@@ -30,7 +30,6 @@ docker build \
     --build-arg BUILDKIT_INLINE_CACHE=1 \
     -t "${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}" \
     -f "${SCRIPT_DIR}/../docker/Dockerfile" \
-    "${SCRIPT_DIR}/.." \
-    || { print_error "Docker build failed"; exit 1; }
+    "${SCRIPT_DIR}/.."
 
 print_success "Docker image built successfully: ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}"

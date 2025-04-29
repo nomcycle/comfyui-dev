@@ -72,7 +72,6 @@ run_test() {
     # Run the Docker container
     docker run \
       --name comfyui-dev \
-      --gpus all \
       -e COMFY_DEV_SSH_PUBKEY="$PUBKEY" \
       -e COMFY_DEV_TAILSCALE_AUTH="$TAILSCALE_AUTH" \
       -e COMFY_DEV_PYTHON_VERSION="$PYTHON_VERSION" \

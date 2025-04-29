@@ -88,9 +88,9 @@ parse_standard_args() {
     fi
     
     # Pass back unknown args if requested
-    if [[ "$RETURN_UNKNOWN_ARGS" == "true" ]]; then
-        UNKNOWN_ARGS=("${unknown_args[@]}")
-    fi
+    # if [[ "$RETURN_UNKNOWN_ARGS" == "true" ]]; then
+    #     UNKNOWN_ARGS=("${unknown_args[@]}")
+    # fi
     
     return 0
 }

@@ -42,10 +42,18 @@ if [ "${COMFY_DEV_START_COMFY:-false}" = "true" ]; then
     fi
     
     # Start ComfyUI with proper error handling
-    python main.py --listen "0.0.0.0" || {
-        log_error "Failed to start ComfyUI"
-        exit 1
-    }
+    # Use extra arguments from environment variable if provided
+    if [ -n "${COMFY_DEV_EXTRA_ARGS:-}" ]; then
+        python main.py --listen "0.0.0.0" ${COMFY_DEV_EXTRA_ARGS} || {
+            log_error "Failed to start ComfyUI"
+            exit 1
+        }
+    else
+        python main.py --listen "0.0.0.0" || {
+            log_error "Failed to start ComfyUI"
+            exit 1
+        }
+    fi
 else
     log_message "Running in idle mode..."
     log_message "Will check lsyncd status every minute"

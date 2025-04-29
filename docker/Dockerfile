@@ -98,8 +98,12 @@ RUN chmod +x /home/comfy/startup/scripts/*.sh && \
 RUN mkdir -p /workspace && \
     chown -R comfy:comfy /workspace
 
+# Set Tailscale state directory for persistence
+ENV TS_STATE_DIR=/var/lib/tailscale/
+
 # Setup workspace as a volume
 VOLUME /workspace
+VOLUME /var/lib/tailscale
 
 # Install uv for Python package management (as comfy user)
 USER comfy

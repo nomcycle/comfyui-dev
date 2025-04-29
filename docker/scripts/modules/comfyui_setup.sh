@@ -10,19 +10,13 @@ validate_commands "git" "grep" "sed"
 
 # Navigate to workspace - exit if workspace directory doesn't exist
 verify_dir "${WORKSPACE_DIR}" "workspace directory"
-cd "${WORKSPACE_DIR}" || {
-    log_error "Failed to navigate to workspace directory"
-    exit 1
-}
+cd "${WORKSPACE_DIR}"
 
 # Clone ComfyUI repository if it doesn't exist
 if [ ! -d "${WORKSPACE_COMFYUI}" ]; then
     log_message "Cloning ComfyUI repository from ${COMFY_REPO}..."
     
-    git clone "${COMFY_REPO}" || {
-        log_error "Failed to clone repository"
-        exit 1
-    }
+    git clone "${COMFY_REPO}"
     
     log_success "ComfyUI repository cloned successfully."
 elif [ ! -d "${WORKSPACE_COMFYUI}/.git" ]; then
