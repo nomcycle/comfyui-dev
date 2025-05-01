@@ -32,7 +32,7 @@ if [[ "${COMFY_DEV_ROLE}" == "LEADER" ]]; then
     if [ ! -f "${UV_PATH}" ]; then
         log_error "uv command not found at ${UV_PATH}"
         exit 1
-    }
+    fi
     
     source "${LOCAL_PYTHON}/.venv/bin/activate"
     

@@ -44,15 +44,9 @@ if [ "${COMFY_DEV_START_COMFY:-false}" = "true" ]; then
     # Start ComfyUI with proper error handling
     # Use extra arguments from environment variable if provided
     if [ -n "${COMFY_DEV_EXTRA_ARGS:-}" ]; then
-        python main.py --listen "0.0.0.0" ${COMFY_DEV_EXTRA_ARGS} || {
-            log_error "Failed to start ComfyUI"
-            exit 1
-        }
+        python main.py --listen "0.0.0.0" ${COMFY_DEV_EXTRA_ARGS}
     else
-        python main.py --listen "0.0.0.0" || {
-            log_error "Failed to start ComfyUI"
-            exit 1
-        }
+        python main.py --listen "0.0.0.0"
     fi
 else
     log_message "Running in idle mode..."

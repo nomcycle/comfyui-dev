@@ -25,8 +25,10 @@ if [[ "${COMFY_DEV_ROLE}" == "LEADER" ]]; then
         
         log_success "ComfyUI repository cloned successfully."
     elif [ ! -d "${WORKSPACE_COMFYUI}/.git" ]; then
-        log_error "ComfyUI directory exists but is not a git repository"
-        exit 1
+        log_message "ComfyUI directory exists but is not a git repository. Re-creating it..."
+        rm -rf "${WORKSPACE_COMFYUI}"
+        git clone "${COMFY_REPO}"
+        log_success "ComfyUI repository re-created successfully."
     else
         log_message "ComfyUI directory exists in workspace."
     fi
