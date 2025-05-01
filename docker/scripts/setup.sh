@@ -18,29 +18,90 @@ ls -la /workspace --all || {
 
 log_message "Using Python version: ${PYTHON_VERSION}"
 
-# Initialize setup components in the correct order with proper validation
-log_message "======================= CURSOR SETUP ========================"
-source /home/comfy/startup/scripts/modules/cursor_setup.sh || {
-    log_error "Cursor setup failed"
+# Initialize role first
+log_message "======================= ROLE SETUP =========================="
+source /home/comfy/startup/scripts/modules/role_setup.sh || {
+    log_error "Role setup failed"
     exit 1
 }
 
-log_message "======================= PYTHON SETUP ========================"
-source /home/comfy/startup/scripts/modules/python_setup.sh || {
-    log_error "Python setup failed"
-    exit 1
-}
-
-log_message "======================= COMFYUI SETUP ======================="
-source /home/comfy/startup/scripts/modules/comfyui_setup.sh || {
-    log_error "ComfyUI setup failed"
-    exit 1
-}
-
-log_message "======================= SYNC SETUP =========================="
-source /home/comfy/startup/scripts/modules/sync_setup.sh || {
-    log_error "Sync setup failed"
-    exit 1
-}
-
-log_success "Environment setup complete!"
+# Leader/follower specific setup paths
+if [[ "${COMFY_DEV_ROLE}" == "LEADER" ]]; then
+    # LEADER SETUP SEQUENCE
+    log_message "Running LEADER setup sequence..."
+    
+    # Setup components in correct order with proper validation
+    log_message "======================= PYTHON SETUP ========================"
+    source /home/comfy/startup/scripts/modules/python_setup.sh || {
+        log_error "Python setup failed"
+        exit 1
+    }
+    
+    log_message "======================= COMFYUI SETUP ======================="
+    source /home/comfy/startup/scripts/modules/comfyui_setup.sh || {
+        log_error "ComfyUI setup failed"
+        exit 1
+    }
+    
+    log_message "======================= PACKAGES SETUP ======================"
+    source /home/comfy/startup/scripts/modules/packages_setup.sh || {
+        log_error "Packages setup failed"
+        exit 1
+    }
+    
+    log_message "======================= CURSOR SETUP ========================"
+    source /home/comfy/startup/scripts/modules/cursor_setup.sh || {
+        log_error "Cursor setup failed"
+        exit 1
+    }
+    
+    log_message "======================= SYNC SETUP =========================="
+    source /home/comfy/startup/scripts/modules/sync_setup.sh || {
+        log_error "Sync setup failed"
+        exit 1
+    }
+    
+    # Signal complete setup
+    touch /workspace/.setup/setup_complete
+    log_success "LEADER environment setup complete!"
+    
+else
+    # FOLLOWER SETUP SEQUENCE
+    log_message "Running FOLLOWER setup sequence..."
+    
+    # Wait for leader to finish complete setup
+    wait_for_leader_completion "packages_ready"
+    
+    # Now setup follower in correct order
+    log_message "======================= PYTHON SETUP ========================"
+    source /home/comfy/startup/scripts/modules/python_setup.sh || {
+        log_error "Python setup failed"
+        exit 1
+    }
+    
+    log_message "======================= COMFYUI SETUP ======================="
+    source /home/comfy/startup/scripts/modules/comfyui_setup.sh || {
+        log_error "ComfyUI setup failed"
+        exit 1
+    }
+    
+    log_message "======================= PACKAGES SETUP ======================"
+    source /home/comfy/startup/scripts/modules/packages_setup.sh || {
+        log_error "Packages setup failed"
+        exit 1
+    }
+    
+    log_message "======================= CURSOR SETUP ========================"
+    source /home/comfy/startup/scripts/modules/cursor_setup.sh || {
+        log_error "Cursor setup failed"
+        exit 1
+    }
+    
+    log_message "======================= SYNC SETUP =========================="
+    source /home/comfy/startup/scripts/modules/sync_setup.sh || {
+        log_error "Sync setup failed"
+        exit 1
+    }
+    
+    log_success "FOLLOWER environment setup complete!"
+fi

@@ -1,0 +1,39 @@
+version: '3'
+
+services:
+  leader:
+    image: nomcycle/comfyui-dev:latest
+    environment:
+      - COMFY_DEV_ROLE=LEADER
+      - COMFY_DEV_SSH_PUBKEY=${COMFY_DEV_SSH_PUBKEY}
+      - COMFY_DEV_TAILSCALE_AUTH=${COMFY_DEV_TAILSCALE_AUTH}
+      - COMFY_DEV_TAILSCALE_MACHINENAME=comfyui-leader
+      - COMFY_DEV_START_COMFY=true
+    volumes:
+      - workspace:/workspace
+    ports:
+      - "8188:8188"
+    healthcheck:
+      test: ["CMD", "test", "-f", "/workspace/.setup/setup_complete"]
+      interval: 30s
+      timeout: 10s
+      retries: 60
+    
+  follower1:
+    image: nomcycle/comfyui-dev:latest
+    environment:
+      - COMFY_DEV_ROLE=FOLLOWER
+      - COMFY_DEV_SSH_PUBKEY=${COMFY_DEV_SSH_PUBKEY}
+      - COMFY_DEV_TAILSCALE_AUTH=${COMFY_DEV_TAILSCALE_AUTH}
+      - COMFY_DEV_TAILSCALE_MACHINENAME=comfyui-follower1
+      - COMFY_DEV_START_COMFY=true
+    volumes:
+      - workspace:/workspace
+    ports:
+      - "8189:8188"
+    depends_on:
+      leader:
+        condition: service_healthy
+
+volumes:
+  workspace:

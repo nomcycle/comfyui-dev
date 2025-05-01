@@ -154,6 +154,28 @@ setup_path() {
     log_message "PATH setup complete: $PATH"
 }
 
+# Wait for leader to complete specific setup step
+wait_for_leader_completion() {
+    local marker="$1"
+    local max_retries=${2:-60}  # Default: 30 minutes at 30-second intervals
+    local retry_delay=${3:-30}
+    local retries=0
+    
+    log_message "Waiting for leader to complete ${marker} setup..."
+    
+    while [[ ! -f "/workspace/.setup/${marker}" ]]; do
+        retries=$((retries+1))
+        if [[ $retries -ge $max_retries ]]; then
+            log_error "Timed out waiting for leader to complete ${marker} setup"
+            exit 1
+        fi
+        log_message "Waiting for leader to complete ${marker} setup (attempt ${retries}/${max_retries})..."
+        sleep $retry_delay
+    done
+    
+    log_success "Leader has completed ${marker} setup"
+}
+
 # Run command as comfy user with proper PATH
 run_as_comfy() {
     local cmd="$1"

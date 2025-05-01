@@ -1,0 +1,32 @@
+## Multi-Instance Setup with Leader/Follower Pattern
+
+For cluster setups with shared workspace volume, you can configure containers with distinct roles:
+
+- **LEADER**: Pushes changes from local directories to workspace
+- **FOLLOWER**: Pulls changes from workspace to local directories
+
+### Configuration
+
+Set the `COMFY_DEV_ROLE` environment variable to `LEADER` or `FOLLOWER`:
+
+```bash
+# Example
+COMFY_DEV_ROLE=LEADER
+```
+
+### Docker Compose Example
+
+See `docker-compose.example.yml` for a complete multi-instance setup:
+
+```bash
+# Start the leader/follower setup
+docker compose -f docker-compose.example.yml up -d
+```
+
+### Behavior
+
+- Leader initializes the shared workspace and performs initial setup
+- Followers wait for leader to complete critical steps before proceeding
+- Leader pushes local changes to workspace
+- Followers pull workspace changes to local directories
+- This prevents race conditions when multiple instances share the same volume
