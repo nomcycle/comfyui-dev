@@ -10,7 +10,10 @@ setup_path
 validate_commands "mkdir" "chmod" "chown" "tailscaled" "tailscale" "service" "grep" "awk" "paste"
 
 # Dynamically construct COMFY_ENV_VARS for passing environment to subprocesses
-COMFY_ENV_VARS=$(env | grep "COMFY_DEV_" | awk '{print $1}' | paste -sd " " -)
+# Collect both COMFY_DEV_ and COMFY_CLUSTER_ environment variables for passing to subprocesses
+COMFY_DEV_VARS=$(env | grep "COMFY_DEV_" | awk '{print $1}' | paste -sd " " -)
+COMFY_CLUSTER_VARS=$(env | grep "COMFY_CLUSTER_" | awk '{print $1}' | paste -sd " " -)
+COMFY_ENV_VARS="${COMFY_DEV_VARS} ${COMFY_CLUSTER_VARS}"
 export COMFY_ENV_VARS
 
 # Validate required environment variables

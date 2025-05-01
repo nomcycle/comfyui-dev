@@ -30,78 +30,53 @@ if [[ "${COMFY_DEV_ROLE}" == "LEADER" ]]; then
     # LEADER SETUP SEQUENCE
     log_message "Running LEADER setup sequence..."
     
-    # Setup components in correct order with proper validation
-    log_message "======================= PYTHON SETUP ========================"
-    source /home/comfy/startup/scripts/modules/python_setup.sh || {
-        log_error "Python setup failed"
-        exit 1
-    }
-    
-    log_message "======================= COMFYUI SETUP ======================="
-    source /home/comfy/startup/scripts/modules/comfyui_setup.sh || {
-        log_error "ComfyUI setup failed"
-        exit 1
-    }
-    
-    log_message "======================= PACKAGES SETUP ======================"
-    source /home/comfy/startup/scripts/modules/packages_setup.sh || {
-        log_error "Packages setup failed"
-        exit 1
-    }
-    
-    log_message "======================= CURSOR SETUP ========================"
-    source /home/comfy/startup/scripts/modules/cursor_setup.sh || {
-        log_error "Cursor setup failed"
-        exit 1
-    }
-    
-    log_message "======================= SYNC SETUP =========================="
-    source /home/comfy/startup/scripts/modules/sync_setup.sh || {
-        log_error "Sync setup failed"
-        exit 1
-    }
-    
-    # Signal complete setup
-    touch /workspace/.setup/setup_complete
-    log_success "LEADER environment setup complete!"
-    
+    # Wait for leader to finish complete setup (follower only)
+    if [[ "${COMFY_DEV_ROLE}" == "FOLLOWER" ]]; then
+        wait_for_leader_completion "packages_ready"
+    fi
 else
     # FOLLOWER SETUP SEQUENCE
     log_message "Running FOLLOWER setup sequence..."
     
     # Wait for leader to finish complete setup
     wait_for_leader_completion "packages_ready"
-    
-    # Now setup follower in correct order
-    log_message "======================= PYTHON SETUP ========================"
-    source /home/comfy/startup/scripts/modules/python_setup.sh || {
-        log_error "Python setup failed"
-        exit 1
-    }
-    
-    log_message "======================= COMFYUI SETUP ======================="
-    source /home/comfy/startup/scripts/modules/comfyui_setup.sh || {
-        log_error "ComfyUI setup failed"
-        exit 1
-    }
-    
-    log_message "======================= PACKAGES SETUP ======================"
-    source /home/comfy/startup/scripts/modules/packages_setup.sh || {
-        log_error "Packages setup failed"
-        exit 1
-    }
-    
-    log_message "======================= CURSOR SETUP ========================"
-    source /home/comfy/startup/scripts/modules/cursor_setup.sh || {
-        log_error "Cursor setup failed"
-        exit 1
-    }
-    
-    log_message "======================= SYNC SETUP =========================="
-    source /home/comfy/startup/scripts/modules/sync_setup.sh || {
-        log_error "Sync setup failed"
-        exit 1
-    }
-    
+fi
+
+# Common setup components in correct order with proper validation
+log_message "======================= PYTHON SETUP ========================"
+source /home/comfy/startup/scripts/modules/python_setup.sh || {
+    log_error "Python setup failed"
+    exit 1
+}
+
+log_message "======================= COMFYUI SETUP ======================="
+source /home/comfy/startup/scripts/modules/comfyui_setup.sh || {
+    log_error "ComfyUI setup failed"
+    exit 1
+}
+
+log_message "======================= PACKAGES SETUP ======================"
+source /home/comfy/startup/scripts/modules/packages_setup.sh || {
+    log_error "Packages setup failed"
+    exit 1
+}
+
+log_message "======================= CURSOR SETUP ========================"
+source /home/comfy/startup/scripts/modules/cursor_setup.sh || {
+    log_error "Cursor setup failed"
+    exit 1
+}
+
+log_message "======================= SYNC SETUP =========================="
+source /home/comfy/startup/scripts/modules/sync_setup.sh || {
+    log_error "Sync setup failed"
+    exit 1
+}
+
+# Signal complete setup (leader only)
+if [[ "${COMFY_DEV_ROLE}" == "LEADER" ]]; then
+    touch /workspace/.setup/setup_complete
+    log_success "LEADER environment setup complete!"
+else
     log_success "FOLLOWER environment setup complete!"
 fi
