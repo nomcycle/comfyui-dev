@@ -34,19 +34,21 @@ if [[ "${COMFY_DEV_ROLE}" == "LEADER" ]]; then
     # Navigate to workspace - exit if workspace directory doesn't exist
     verify_dir "${WORKSPACE_DIR}" "workspace directory"
     cd "${WORKSPACE_DIR}"
-    
-    # Clone ComfyUI repository if it doesn't exist
-    if [ ! -d "${LOCAL_COMFYUI}" ]; then
+
+    # Check whether the WORKSPACE_COMFYUI directory exists or empty, if it does, then sync_dirs from WORKSPACE_COMFYUI to LOCAL_COMFYUI, otherwise clone the repository
+    if [ -d "${WORKSPACE_COMFYUI}" ] && ! is_dir_empty "${WORKSPACE_COMFYUI}"; then
+        log_message "Syncing ComfyUI repository from workspace to local..."
+        sync_dirs "${WORKSPACE_COMFYUI}" "${LOCAL_COMFYUI}" "ComfyUI repository"
+    else # Clone ComfyUI repository if it doesn't exist
         log_message "Cloning ComfyUI repository from ${COMFY_REPO}..."
-        
         git clone "${COMFY_REPO}" "${LOCAL_COMFYUI}"
-        
         log_success "ComfyUI repository cloned successfully."
-    elif [ ! -d "${LOCAL_COMFYUI}/.git" ]; then
-        log_error "Local ComfyUI directory exists but is not a git repository"
-        exit 1
-    else
-        log_message "Local ComfyUI directory already exists."
+        
+        log_message "Copying extra_model_paths.yaml to workspace ComfyUI directory..."
+        cp -vf ~/startup/config/comfy/extra_model_paths.yaml "${LOCAL_COMFYUI}/"
+
+        # Print the local ComfyUI directory
+        ls -la "${LOCAL_COMFYUI}"
     fi
     
     # Verify the local ComfyUI directory is valid
@@ -62,9 +64,6 @@ if [[ "${COMFY_DEV_ROLE}" == "LEADER" ]]; then
     # Sync from local to workspace to ensure the latest content
     log_message "Syncing ComfyUI repository from local to workspace directory..."
     sync_dirs "${LOCAL_COMFYUI}" "${WORKSPACE_COMFYUI}" "ComfyUI repository"
-    
-    log_message "Copying extra_model_paths.yaml to workspace ComfyUI directory..."
-    cp -vf ~/startup/config/comfy/extra_model_paths.yaml "${WORKSPACE_COMFYUI}/"
     
     # Signal ComfyUI setup completion
     touch /workspace/.setup/comfyui_ready

@@ -62,10 +62,16 @@ if [[ "${COMFY_DEV_ROLE}" == "LEADER" ]]; then
     
     # Step 2: Install Python in local directory
     install_python_with_uv "${LOCAL_PYTHON}"
-    
-    # Step 3: Sync the new installation from local to workspace
-    log_message "Syncing Python installation from local to workspace..."
-    sync_dirs "${LOCAL_PYTHON}" "${WORKSPACE_PYTHON}" "Python installation"
+
+    # If WORKSPACE_PYTHON exists, then sync the old installation from workspace to local
+    if [ -d "${WORKSPACE_PYTHON}" ]; then
+        log_message "Syncing Python installation from workspace to local..."
+        sync_dirs "${WORKSPACE_PYTHON}" "${LOCAL_PYTHON}" "Python installation"
+    else
+        # Step 3: Sync the new installation from local to workspace
+        log_message "Syncing Python installation from local to workspace..."
+        sync_dirs "${LOCAL_PYTHON}" "${WORKSPACE_PYTHON}" "Python installation"
+    fi
     
     # Signal Python setup completion
     touch /workspace/.setup/python_ready

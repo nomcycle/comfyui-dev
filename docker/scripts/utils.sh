@@ -215,6 +215,12 @@ check_python_version() {
 # DIRECTORY MANAGEMENT HELPERS
 #---------------------------------------------------------------
 
+# Check if directory is empty
+is_dir_empty() {
+    local dir="$1"
+    [ -d "$dir" ] && [ -z "$(ls -A "$dir")" ]
+}
+
 # Create directory with proper permissions - exits on failure via trap
 ensure_dir() {
     local dir="$1"

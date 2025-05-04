@@ -21,7 +21,10 @@ if [[ "${COMFY_DEV_ROLE}" == "LEADER" ]]; then
         log_error "Failed to navigate to local ComfyUI directory"
         exit 1
     }
-    
+
+    # ls ComfyUI directory
+    ls -la
+
     # Verify requirements.txt exists
     if [ ! -f "requirements.txt" ]; then
         log_error "requirements.txt not found in ComfyUI directory"
@@ -82,7 +85,7 @@ else
     
     # No need to install packages - they're already synced from leader
     log_message "Using Python packages installed by leader"
-    
+
     # Just ensure venv is activated
     source "${LOCAL_PYTHON}/.venv/bin/activate"
 fi
