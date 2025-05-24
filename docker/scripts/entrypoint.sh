@@ -7,7 +7,8 @@ log_message "Initializing ComfyUI development container..."
 setup_path
 
 # Validate essential commands
-validate_commands "mkdir" "chmod" "chown" "tailscaled" "tailscale" "service" "grep" "awk" "paste"
+# validate_commands "mkdir" "chmod" "chown" "tailscaled" "tailscale" "service" "grep" "awk" "paste"
+validate_commands "mkdir" "chmod" "chown" "service" "grep" "awk" "paste"
 
 # Dynamically construct COMFY_ENV_VARS for passing environment to subprocesses
 # Collect both COMFY_DEV_ and COMFY_CLUSTER_ environment variables for passing to subprocesses
@@ -29,8 +30,23 @@ chown comfy:comfy /home/comfy/.ssh/authorized_keys
 log_message "Connecting to tailscale..."
 mkdir -p /run/sshd
 
+# Get machine name with default fallback
+COMFY_DEV_TAILSCALE_MACHINENAME=${COMFY_DEV_TAILSCALE_MACHINENAME:-comfyui-dev-0}
+
+# Create tailscale state directory
+mkdir -p /workspace/.tailscale/${COMFY_DEV_TAILSCALE_MACHINENAME}
+
+# Stop any existing tailscaled processes
+log_message "Checking for existing tailscaled processes..."
+if pgrep -x "tailscaled" > /dev/null; then
+    log_message "Stopping existing tailscaled process..."
+    pkill -x tailscaled
+    sleep 2
+fi
+
 # Start tailscaled daemon
-tailscaled --tun=userspace-networking & 
+log_message "Starting tailscaled daemon..."
+tailscaled --tun=userspace-networking --statedir=/workspace/.tailscale/${COMFY_DEV_TAILSCALE_MACHINENAME} & 
 TAILSCALED_PID=$!
 
 # Verify tailscaled is running
@@ -40,11 +56,8 @@ if ! kill -0 $TAILSCALED_PID 2>/dev/null; then
     exit 1
 fi
 
-# Get machine name with default fallback
-COMFY_DEV_TAILSCALE_MACHINENAME=${COMFY_DEV_TAILSCALE_MACHINENAME:-comfyui-dev-0}
-
 # Connect to tailscale network
-tailscale up --hostname=${COMFY_DEV_TAILSCALE_MACHINENAME} --authkey=${COMFY_DEV_TAILSCALE_AUTH}
+tailscale up --hostname=${COMFY_DEV_TAILSCALE_MACHINENAME} --auth-key=${COMFY_DEV_TAILSCALE_AUTH}
 
 # Get IP address from tailscale
 TAILSCALE_IP=$(tailscale ip -4)

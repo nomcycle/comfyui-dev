@@ -9,7 +9,7 @@ services:
       - COMFY_DEV_EXTRA_ARGS=${COMFY_DEV_EXTRA_ARGS}
       - COMFY_DEV_TAILSCALE_AUTH=${COMFY_DEV_TAILSCALE_AUTH}
       - COMFY_DEV_TAILSCALE_MACHINENAME=comfyui-leader
-      - COMFY_DEV_START_COMFY=true
+      - COMFY_DEV_START_COMFY=- COMFY_DEV_START_COMFY
     volumes:
       - workspace:/workspace
     ports:
@@ -28,7 +28,7 @@ services:
       - COMFY_DEV_SSH_PUBKEY=${COMFY_DEV_SSH_PUBKEY}
       - COMFY_DEV_TAILSCALE_AUTH=${COMFY_DEV_TAILSCALE_AUTH}
       - COMFY_DEV_TAILSCALE_MACHINENAME=comfyui-follower1
-      - COMFY_DEV_START_COMFY=true
+      - COMFY_DEV_START_COMFY=COMFY_DEV_START_COMFY
     volumes:
       - workspace:/workspace
     ports:

@@ -28,6 +28,7 @@ print_info "Using configuration from: ${SCRIPT_DIR}/../config/default.env"
 export DOCKER_BUILDKIT=1
 docker build \
     --build-arg BUILDKIT_INLINE_CACHE=1 \
+    -t nomcycle/comfyui-dev:latest \
     -t "${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}" \
     -f "${SCRIPT_DIR}/../docker/Dockerfile" \
     "${SCRIPT_DIR}/.."

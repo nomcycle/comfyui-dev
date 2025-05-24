@@ -270,6 +270,8 @@ sync_dirs() {
     local source_dir="$1"
     local target_dir="$2"
     local description="${3:-directories}"
+
+    log_message "Syncing $description from $source_dir to $target_dir"
     
     if [ -z "$source_dir" ] || [ -z "$target_dir" ]; then
         log_error "sync_dirs: Source or target directory not provided"
@@ -282,9 +284,8 @@ sync_dirs() {
     fi
     
     # Ensure target directory's parent exists
-    ensure_dir "$(dirname "$target_dir")"
+    ensure_dir $target_dir
     
-    log_message "Syncing $description from $source_dir to $target_dir"
     rsync -a --delete "$source_dir/" "$target_dir/"
     
     log_success "Successfully synced $description"

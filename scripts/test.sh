@@ -61,7 +61,7 @@ run_test() {
     
     # Remove existing container if it exists
     print_info "Cleaning up any existing container..."
-    docker rm -f comfyui-dev 2>/dev/null || true
+    sudo docker rm -f comfyui-dev 2>/dev/null || true
     
     print_info "Starting ComfyUI development container"
     print_info "Using Tailscale auth key: ${TAILSCALE_AUTH:0:5}..."
@@ -70,11 +70,12 @@ run_test() {
     print_info "Using SSH folder path: $SSH_FOLDER_PATH"
     
     # Run the Docker container
-    docker run \
+    sudo docker run \
       --name comfyui-dev \
       -e COMFY_DEV_SSH_PUBKEY="$PUBKEY" \
       -e COMFY_DEV_TAILSCALE_AUTH="$TAILSCALE_AUTH" \
       -e COMFY_DEV_PYTHON_VERSION="$PYTHON_VERSION" \
+      -e COMFY_DEV_START_COMFY="$START_COMFY" \
       -e COMFY_DEV_GIT_FORK="$GIT_FORK" \
       -e COMFY_DEV_WIN32="false" \
       -e COMFY_DEV_START_COMFY="false" \

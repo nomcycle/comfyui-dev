@@ -22,8 +22,8 @@ install_python_with_uv() {
     ensure_dir "${install_dir}" "comfy"
     
     # Install Python
-    log_message "Installing Python ${PYTHON_VERSION} with uv..."
-    $UV_PATH python install --managed-python --install-dir "${install_dir}/python" "${PYTHON_VERSION}" || {
+    log_message "Installing Python ${PYTHON_VERSION} with uv to ${install_dir}..."
+    $UV_PATH python install --managed-python --install-dir "${install_dir}" "${PYTHON_VERSION}" || {
         log_error "Failed to install Python ${PYTHON_VERSION}"
         exit 1
     }

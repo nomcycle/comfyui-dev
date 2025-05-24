@@ -47,7 +47,8 @@ parse_standard_args() {
     GIT_FORK="${DEFAULT_COMFYUI_REPO:-https://github.com/comfyanonymous/ComfyUI}"
     PYTHON_VERSION="${DEFAULT_PYTHON_VERSION:-3.12.4}"
     SSH_FOLDER_PATH="$HOME/.ssh"
-    
+    START_COMFY="true"
+
     local unknown_args=()
     local i=1
     
@@ -69,6 +70,10 @@ parse_standard_args() {
             --ssh-folder-path)
                 i=$((i+1))
                 SSH_FOLDER_PATH="${!i}"
+                ;;
+            --start-comfy)
+                i=$((i+1))
+                START_COMFY="${!i}"
                 ;;
             --help)
                 # Return the help flag for caller to handle
@@ -102,6 +107,7 @@ show_standard_usage() {
     echo "  --git-fork URL          URL to ComfyUI Git repository"
     echo "  --python-version VER    Python version to use"
     echo "  --ssh-folder-path PATH  Path to SSH folder (default: ~/.ssh)"
+    echo "  --start-comfy           Start ComfyUI"
     echo "  --help                  Show this help message"
 }
 

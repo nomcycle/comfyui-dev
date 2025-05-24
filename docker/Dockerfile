@@ -46,20 +46,6 @@ RUN apt-get update -y && \
     rm -rf /var/lib/apt/lists/* && \
     echo "en_US.UTF-8 UTF-8" > /etc/locale.gen
 
-# Stage 3: CUDA setup
-# FROM dev-deps AS cuda-setup
-
-# Install CUDA
-# RUN wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-keyring_1.1-1_all.deb && \
-#     dpkg -i cuda-keyring_1.1-1_all.deb && \
-#     apt-get update && \
-#     apt-get -y install cuda-toolkit-12-4 && \
-#     apt-get clean && \
-#     rm -rf /var/lib/apt/lists/*
-
-# ENV CPLUS_INCLUDE_PATH=/usr/local/cuda/include
-# ENV PATH=/usr/local/cuda/bin:$PATH
-
 # Stage 4: User setup
 FROM dev-deps AS user-setup
 
@@ -99,11 +85,8 @@ RUN mkdir -p /workspace && \
     chown -R comfy:comfy /workspace
 
 # Set Tailscale state directory for persistence
-ENV TS_STATE_DIR=/var/lib/tailscale/
-
 # Setup workspace as a volume
 VOLUME /workspace
-VOLUME /var/lib/tailscale
 
 # Install uv for Python package management (as comfy user)
 USER comfy
