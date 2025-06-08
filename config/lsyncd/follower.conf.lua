@@ -14,7 +14,7 @@ sync {
     default.rsync,
     source = "/workspace/ComfyUI",    -- workspace directory (persistent storage)
     target = "/home/comfy/ComfyUI",  -- local directory (faster access)
-    exclude = {"__pycache__"},        -- exclude Python cache files
+    exclude = {"__pycache__", "home/comfy/ComfyUI/models"},        -- exclude Python cache files
     -- Very small delay to ensure faster syncing
     delay = 0.5,
     rsync = {

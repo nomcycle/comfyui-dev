@@ -51,6 +51,8 @@ FROM dev-deps AS user-setup
 
 # Create user and setup SSH
 RUN useradd -m -s /bin/bash comfy && \
+    usermod -aG sudo comfy && \
+    echo "comfy ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers && \
     sed -i 's/#PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config && \
     sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin no/' /etc/ssh/sshd_config && \
     # Setup SSH directory

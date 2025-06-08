@@ -176,11 +176,47 @@ wait_for_leader_completion() {
     log_success "Leader has completed ${marker} setup"
 }
 
+#---------------------------------------------------------------
+# ENVIRONMENT MANAGEMENT
+#---------------------------------------------------------------
+
+# Dynamically construct COMFY_ENV_VARS for passing environment to subprocesses
+# Collect both COMFY_DEV_ and COMFY_CLUSTER_ environment variables for passing to subprocesses
+# Function to collect environment variables by prefix for passing to subprocesses
+collect_env_vars_by_prefix() {
+    local prefix="$1"
+    env | grep "^${prefix}" | awk -F= '{print $1}' | paste -sd " " -
+}
+
+# Serialize environment variables to ~/.comfy.env for persistence
+serialize_env_vars() {
+    local vars="$1"
+    
+    # Create file with header if it doesn't exist
+    if [ ! -f /home/comfy/.comfy.env ]; then
+        log_message "Creating ~/.comfy.env with environment variables..."
+        echo "# ComfyUI Environment Variables - Generated at $(date)" > /home/comfy/.comfy.env
+    else
+        log_message "Appending environment variables to ~/.comfy.env..."
+    fi
+    
+    for var in $vars; do
+        if [ -n "${!var:-}" ]; then
+            # Check if variable already exists in file to avoid duplicates
+            if ! grep -q "^export $var=" /home/comfy/.comfy.env 2>/dev/null; then
+                echo "export $var=\"${!var}\"" >> /home/comfy/.comfy.env
+            fi
+        fi
+    done
+    chmod 644 /home/comfy/.comfy.env
+    chown comfy:comfy /home/comfy/.comfy.env
+}
+
 # Run command as comfy user with proper PATH
 run_as_comfy() {
     local cmd="$1"
     shift
-    su -l comfy -c "export PATH=${HOME}/.local/bin:$PATH:${HOME}/.cargo/bin; ${COMFY_ENV_VARS:-} $cmd $*"
+    su -l comfy -c "source ~/.comfy.env 2>/dev/null || true; export PATH=${HOME}/.local/bin:$PATH:${HOME}/.cargo/bin; $cmd $*"
 }
 
 #---------------------------------------------------------------

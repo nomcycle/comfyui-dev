@@ -10,12 +10,24 @@ setup_path
 # validate_commands "mkdir" "chmod" "chown" "tailscaled" "tailscale" "service" "grep" "awk" "paste"
 validate_commands "mkdir" "chmod" "chown" "service" "grep" "awk" "paste"
 
-# Dynamically construct COMFY_ENV_VARS for passing environment to subprocesses
-# Collect both COMFY_DEV_ and COMFY_CLUSTER_ environment variables for passing to subprocesses
-COMFY_DEV_VARS=$(env | grep "COMFY_DEV_" | awk '{print $1}' | paste -sd " " -)
-COMFY_CLUSTER_VARS=$(env | grep "COMFY_CLUSTER_" | awk '{print $1}' | paste -sd " " -)
-COMFY_ENV_VARS="${COMFY_DEV_VARS} ${COMFY_CLUSTER_VARS}"
+# Collect environment variables for passing to subprocesses
+COMFY_DEV_VARS=$(collect_env_vars_by_prefix "COMFY_DEV_")
+COMFY_ENV_VARS="${COMFY_DEV_VARS}"
+
+if env | grep -q "^COMFY_CLUSTER_"; then
+    COMFY_CLUSTER_VARS=$(collect_env_vars_by_prefix "COMFY_CLUSTER_")
+    COMFY_ENV_VARS="${COMFY_ENV_VARS} ${COMFY_CLUSTER_VARS}"
+fi
+
+# Only collect RUNPOD_ vars if they exist
+RUNPOD_VARS=""
+if env | grep -q "^RUNPOD_"; then
+    RUNPOD_VARS=$(collect_env_vars_by_prefix "RUNPOD_")
+    COMFY_ENV_VARS="${COMFY_ENV_VARS} ${RUNPOD_VARS}"
+fi
+
 export COMFY_ENV_VARS
+serialize_env_vars "$COMFY_ENV_VARS"
 
 # Validate required environment variables
 verify_env_vars "COMFY_DEV_SSH_PUBKEY" "COMFY_DEV_TAILSCALE_AUTH"
